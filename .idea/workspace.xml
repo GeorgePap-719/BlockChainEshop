@@ -19,6 +19,7 @@
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
+        <option value="GeorgePap-719" />
         <option value="George" />
         <option value="Gp" />
       </list>
@@ -107,14 +108,18 @@
     <option name="LAST_COMMIT_MESSAGE" value="Second commit from intelij" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2" timestamp="1575832279256">
+    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2" timestamp="1575832448076">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832279256" />
+    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832448076" />
     <state x="890" y="223" width="424" height="484" key="FileChooserDialogImpl" timestamp="1575832368808">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="890" y="223" width="424" height="484" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1575832368808" />
+    <state x="555" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1575832456661">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="555" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832456661" />
     <state x="656" y="127" width="1200" height="800" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1575832043495">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
