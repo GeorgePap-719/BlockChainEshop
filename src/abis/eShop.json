@@ -1,0 +1,214 @@
+{
+  "contractName": "eShop",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "taskCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"taskCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol\":\"eShop\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol\":{\"keccak256\":\"0x57e04b4de645515c8d6d9f903c8fb9c3e1749d542276b4d5eb768204b23411e1\",\"urls\":[\"bzzr://4b1812511be7b9dc8cff06647d5491f92d44f2dc41db108ec849f1ac1d98fce1\"]}},\"version\":1}",
+  "bytecode": "0x608060405260008055348015601357600080fd5b50607b806100226000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063b6cb58a514602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000548156fea165627a7a72305820f8a38a45b451d73bb3b75c893b5fcbd4d63d4b0bc35183a94aee8721103684770029",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063b6cb58a514602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000548156fea165627a7a72305820f8a38a45b451d73bb3b75c893b5fcbd4d63d4b0bc35183a94aee8721103684770029",
+  "sourceMap": "25:81:1:-;;;94:1;70:25;;25:81;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:81:1;;;;;;;",
+  "deployedSourceMap": "25:81:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:81:1;;;;;;;;;;;;;;;;;;;70:25;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "pragma solidity ^0.5.3;\n\ncontract eShop {\n   // function eShop(){\n    uint public taskCount = 0;\n   // }\n}\n",
+  "sourcePath": "/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol",
+  "ast": {
+    "absolutePath": "/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol",
+    "exportedSymbols": {
+      "eShop": [
+        62
+      ]
+    },
+    "id": 63,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 58,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".3"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:1"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 62,
+        "linearizedBaseContracts": [
+          62
+        ],
+        "name": "eShop",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 61,
+            "name": "taskCount",
+            "nodeType": "VariableDeclaration",
+            "scope": 62,
+            "src": "70:25:1",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 59,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "70:4:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "30",
+              "id": 60,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "94:1:1",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_0_by_1",
+                "typeString": "int_const 0"
+              },
+              "value": "0"
+            },
+            "visibility": "public"
+          }
+        ],
+        "scope": 63,
+        "src": "25:81:1"
+      }
+    ],
+    "src": "0:107:1"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol",
+    "exportedSymbols": {
+      "eShop": [
+        62
+      ]
+    },
+    "id": 63,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 58,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".3"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:1"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 62,
+        "linearizedBaseContracts": [
+          62
+        ],
+        "name": "eShop",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 61,
+            "name": "taskCount",
+            "nodeType": "VariableDeclaration",
+            "scope": 62,
+            "src": "70:25:1",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 59,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "70:4:1",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "30",
+              "id": 60,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "94:1:1",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_0_by_1",
+                "typeString": "int_const 0"
+              },
+              "value": "0"
+            },
+            "visibility": "public"
+          }
+        ],
+        "scope": 63,
+        "src": "25:81:1"
+      }
+    ],
+    "src": "0:107:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+  },
+  "networks": {
+    "1575811306651": {
+      "events": {},
+      "links": {},
+      "address": "0x7f82A53Ff8FcB6dea3B4fECBA714256018c7E31B",
+      "transactionHash": "0xfb3a214c8edb9b39cf267423abb5768c81ee6393c2335e2359c08cc7c115cdbb"
+    }
+  },
+  "schemaVersion": "3.0.16",
+  "updatedAt": "2019-12-08T17:37:19.895Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
