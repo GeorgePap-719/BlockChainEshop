@@ -19,6 +19,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Gp" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="MERGE" />
   </component>
@@ -84,10 +89,10 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2" timestamp="1575831970572">
+    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2" timestamp="1575832244018">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1575831970572" />
+    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832244018" />
     <state x="1223" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1575831861080">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
