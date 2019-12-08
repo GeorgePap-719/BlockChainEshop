@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d48df14d-0493-49b9-b764-beb26315dcaa" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/contracts/eShop.sol" beforeDir="false" afterPath="$PROJECT_DIR$/src/contracts/eShop.sol" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +71,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1575820859326</updated>
-      <workItem from="1575820860481" duration="6141000" />
+      <workItem from="1575820860481" duration="6747000" />
     </task>
     <task id="LOCAL-00001" summary="Second commit from intelij">
       <created>1575832171123</created>
@@ -100,7 +101,14 @@
       <option name="project" value="LOCAL" />
       <updated>1575832550962</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="third commit from intelij">
+      <created>1575832788614</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1575832788614</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -119,29 +127,30 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Second commit from intelij" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second commit from intelij" />
+    <MESSAGE value="third commit from intelij" />
+    <option name="LAST_COMMIT_MESSAGE" value="third commit from intelij" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2" timestamp="1575832550915">
+    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2" timestamp="1575832788572">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832550915" />
+    <state x="772" y="123" width="957" height="807" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832788572" />
     <state x="890" y="223" width="424" height="484" key="FileChooserDialogImpl" timestamp="1575832368808">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="890" y="223" width="424" height="484" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1575832368808" />
-    <state x="555" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1575832456661">
+    <state x="555" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1575832794533">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="555" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832456661" />
+    <state x="555" y="288" width="800" height="528" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832794533" />
     <state x="656" y="127" width="1200" height="800" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1575832043495">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="656" y="127" width="1200" height="800" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1575832043495" />
-    <state x="813" y="357" width="454" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1575832747119">
+    <state x="813" y="357" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1575833234098">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="813" y="357" width="454" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.27.1920.1053@0.27.1920.1053" timestamp="1575832747119" />
+    <state x="813" y="357" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.27.1920.1053@0.27.1920.1053" timestamp="1575833234098" />
     <state x="809" y="303" width="723" height="413" key="git4idea.merge.GitPullDialog" timestamp="1575832104734">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
