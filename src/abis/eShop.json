@@ -4,33 +4,39 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "taskCount",
+      "name": "name",
       "outputs": [
         {
           "name": "",
-          "type": "uint256"
+          "type": "string"
         }
       ],
       "payable": false,
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"taskCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol\":\"eShop\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol\":{\"keccak256\":\"0x57e04b4de645515c8d6d9f903c8fb9c3e1749d542276b4d5eb768204b23411e1\",\"urls\":[\"bzzr://4b1812511be7b9dc8cff06647d5491f92d44f2dc41db108ec849f1ac1d98fce1\"]}},\"version\":1}",
-  "bytecode": "0x608060405260008055348015601357600080fd5b50607b806100226000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063b6cb58a514602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000548156fea165627a7a72305820f8a38a45b451d73bb3b75c893b5fcbd4d63d4b0bc35183a94aee8721103684770029",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063b6cb58a514602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b6000548156fea165627a7a72305820f8a38a45b451d73bb3b75c893b5fcbd4d63d4b0bc35183a94aee8721103684770029",
-  "sourceMap": "25:81:1:-;;;94:1;70:25;;25:81;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:81:1;;;;;;;",
-  "deployedSourceMap": "25:81:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:81:1;;;;;;;;;;;;;;;;;;;70:25;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;:::o",
-  "source": "pragma solidity ^0.5.3;\n\ncontract eShop {\n   // function eShop(){\n    uint public taskCount = 0;\n   // }\n}\n",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol\":\"eShop\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol\":{\"keccak256\":\"0x673ebaedac389379a4dd711a6224f962228d42a73c824fc43962b5c5efc617df\",\"urls\":[\"bzzr://01672cb40d456b10a405ed384795d12ebdbf4b44042c7a1923945010d4efe434\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040518060400160405280600781526020017f6553686f704243000000000000000000000000000000000000000000000000008152506000908051906020019061005c929190610062565b50610107565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100a357805160ff19168380011785556100d1565b828001600101855582156100d1579182015b828111156100d05782518255916020019190600101906100b5565b5b5090506100de91906100e2565b5090565b61010491905b808211156101005760008160009055506001016100e8565b5090565b90565b61017d806101166000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c806306fdde0314610030575b600080fd5b6100386100b3565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561007857808201518184015260208101905061005d565b50505050905090810190601f1680156100a55780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101495780601f1061011e57610100808354040283529160200191610149565b820191906000526020600020905b81548152906001019060200180831161012c57829003601f168201915b50505050508156fea165627a7a72305820f275d7c40c45d93be90f25a51607937cfe4a490a1d290c33e0f1c71511aadeca0029",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c806306fdde0314610030575b600080fd5b6100386100b3565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561007857808201518184015260208101905061005d565b50505050905090810190601f1680156100a55780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101495780601f1061011e57610100808354040283529160200191610149565b820191906000526020600020905b81548152906001019060200180831161012c57829003601f168201915b50505050508156fea165627a7a72305820f275d7c40c45d93be90f25a51607937cfe4a490a1d290c33e0f1c71511aadeca0029",
+  "sourceMap": "25:92:1:-;;;67:48;8:9:-1;5:2;;;30:1;27;20:12;5:2;67:48:1;94:16;;;;;;;;;;;;;;;;;:4;:16;;;;;;;;;;;;:::i;:::-;;25:92;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "25:92:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:92:1;;;;;;;;;;;;;;;;;;;44:18;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;44:18:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "pragma solidity ^0.5.0;\n\ncontract eShop {\n  string public name;\n\n  constructor() public {\n    name = \"eShopBC\";\n  }\n}\n// TODO eshop\n",
   "sourcePath": "/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol",
   "ast": {
     "absolutePath": "/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol",
     "exportedSymbols": {
       "eShop": [
-        62
+        69
       ]
     },
-    "id": 63,
+    "id": 70,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -39,7 +45,7 @@
           "solidity",
           "^",
           "0.5",
-          ".3"
+          ".0"
         ],
         "nodeType": "PragmaDirective",
         "src": "0:23:1"
@@ -50,71 +56,138 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 62,
+        "id": 69,
         "linearizedBaseContracts": [
-          62
+          69
         ],
         "name": "eShop",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 61,
-            "name": "taskCount",
+            "id": 60,
+            "name": "name",
             "nodeType": "VariableDeclaration",
-            "scope": 62,
-            "src": "70:25:1",
+            "scope": 69,
+            "src": "44:18:1",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_uint256",
-              "typeString": "uint256"
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
             },
             "typeName": {
               "id": 59,
-              "name": "uint",
+              "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "70:4:1",
+              "src": "44:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_uint256",
-                "typeString": "uint256"
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
               }
             },
-            "value": {
-              "argumentTypes": null,
-              "hexValue": "30",
-              "id": 60,
-              "isConstant": false,
-              "isLValue": false,
-              "isPure": true,
-              "kind": "number",
-              "lValueRequested": false,
-              "nodeType": "Literal",
-              "src": "94:1:1",
-              "subdenomination": null,
-              "typeDescriptions": {
-                "typeIdentifier": "t_rational_0_by_1",
-                "typeString": "int_const 0"
-              },
-              "value": "0"
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 67,
+              "nodeType": "Block",
+              "src": "88:27:1",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 65,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 63,
+                      "name": "name",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 60,
+                      "src": "94:4:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "hexValue": "6553686f704243",
+                      "id": 64,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "string",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "101:9:1",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_stringliteral_906d38be4a17485b9a35710a848a894df2efed4396a640ca638505b57363b142",
+                        "typeString": "literal_string \"eShopBC\""
+                      },
+                      "value": "eShopBC"
+                    },
+                    "src": "94:16:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 66,
+                  "nodeType": "ExpressionStatement",
+                  "src": "94:16:1"
+                }
+              ]
             },
+            "documentation": null,
+            "id": 68,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 61,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "78:2:1"
+            },
+            "returnParameters": {
+              "id": 62,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "88:0:1"
+            },
+            "scope": 69,
+            "src": "67:48:1",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 63,
-        "src": "25:81:1"
+        "scope": 70,
+        "src": "25:92:1"
       }
     ],
-    "src": "0:107:1"
+    "src": "0:132:1"
   },
   "legacyAST": {
     "absolutePath": "/home/geopapadopoulos/BlockChainTestsAndProjects/eshopBlockchain/src/contracts/eShop.sol",
     "exportedSymbols": {
       "eShop": [
-        62
+        69
       ]
     },
-    "id": 63,
+    "id": 70,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -123,7 +196,7 @@
           "solidity",
           "^",
           "0.5",
-          ".3"
+          ".0"
         ],
         "nodeType": "PragmaDirective",
         "src": "0:23:1"
@@ -134,62 +207,129 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 62,
+        "id": 69,
         "linearizedBaseContracts": [
-          62
+          69
         ],
         "name": "eShop",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 61,
-            "name": "taskCount",
+            "id": 60,
+            "name": "name",
             "nodeType": "VariableDeclaration",
-            "scope": 62,
-            "src": "70:25:1",
+            "scope": 69,
+            "src": "44:18:1",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_uint256",
-              "typeString": "uint256"
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
             },
             "typeName": {
               "id": 59,
-              "name": "uint",
+              "name": "string",
               "nodeType": "ElementaryTypeName",
-              "src": "70:4:1",
+              "src": "44:6:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_uint256",
-                "typeString": "uint256"
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
               }
             },
-            "value": {
-              "argumentTypes": null,
-              "hexValue": "30",
-              "id": 60,
-              "isConstant": false,
-              "isLValue": false,
-              "isPure": true,
-              "kind": "number",
-              "lValueRequested": false,
-              "nodeType": "Literal",
-              "src": "94:1:1",
-              "subdenomination": null,
-              "typeDescriptions": {
-                "typeIdentifier": "t_rational_0_by_1",
-                "typeString": "int_const 0"
-              },
-              "value": "0"
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 67,
+              "nodeType": "Block",
+              "src": "88:27:1",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 65,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 63,
+                      "name": "name",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 60,
+                      "src": "94:4:1",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "hexValue": "6553686f704243",
+                      "id": 64,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "string",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "101:9:1",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_stringliteral_906d38be4a17485b9a35710a848a894df2efed4396a640ca638505b57363b142",
+                        "typeString": "literal_string \"eShopBC\""
+                      },
+                      "value": "eShopBC"
+                    },
+                    "src": "94:16:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 66,
+                  "nodeType": "ExpressionStatement",
+                  "src": "94:16:1"
+                }
+              ]
             },
+            "documentation": null,
+            "id": 68,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 61,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "78:2:1"
+            },
+            "returnParameters": {
+              "id": 62,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "88:0:1"
+            },
+            "scope": 69,
+            "src": "67:48:1",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 63,
-        "src": "25:81:1"
+        "scope": 70,
+        "src": "25:92:1"
       }
     ],
-    "src": "0:107:1"
+    "src": "0:132:1"
   },
   "compiler": {
     "name": "solc",
@@ -201,10 +341,16 @@
       "links": {},
       "address": "0x7f82A53Ff8FcB6dea3B4fECBA714256018c7E31B",
       "transactionHash": "0xfb3a214c8edb9b39cf267423abb5768c81ee6393c2335e2359c08cc7c115cdbb"
+    },
+    "1578828009060": {
+      "events": {},
+      "links": {},
+      "address": "0x7C1D00fb8055d7b3206bE610865C6bF8e47FF7dc",
+      "transactionHash": "0xc04124fa81f58f2b92830a480eb6a9738c2764ce3af5f1d5f865fef60af8d026"
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2019-12-08T17:37:19.895Z",
+  "updatedAt": "2020-01-18T16:51:31.913Z",
   "devdoc": {
     "methods": {}
   },

@@ -1,8 +1,10 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.0;
 
 contract eShop {
-   // function eShop(){
-    uint public taskCount = 3;
-   // }
+  string public name;
+
+  constructor() public {
+    name = "eShopBC";
+  }
 }
 // TODO eshop
