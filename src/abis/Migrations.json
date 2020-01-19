@@ -1409,10 +1409,16 @@
       "links": {},
       "address": "0x205B695Da8637bBd1F163A8306C99d72Ff28C5FB",
       "transactionHash": "0xaeaf32c870b5b895ded5b07acb0d0b093300c890bc0f1ccfa9044bc0dbf7d956"
+    },
+    "1579454513680": {
+      "events": {},
+      "links": {},
+      "address": "0xCBa6f3d71473224F2f2ebfEEa29E474D53151B2d",
+      "transactionHash": "0x99ff4fc0710a51a7901b72036473701d2e43efb8763940c073e5ddc71c941779"
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2020-01-18T17:46:16.970Z",
+  "updatedAt": "2020-01-19T17:53:42.827Z",
   "devdoc": {
     "methods": {}
   },

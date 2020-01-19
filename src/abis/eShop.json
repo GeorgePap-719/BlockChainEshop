@@ -5442,10 +5442,83 @@
       "links": {},
       "address": "0xa824b22c19CFB63bB5F06153bCEf2D7C3fEcD441",
       "transactionHash": "0xae06e01881df8c4f3413208710d4f6c40a3a1a5f050a4fdc3291bb7be871e915"
+    },
+    "1579454513680": {
+      "events": {
+        "0xbc59c0c8165864dcceb377dd07d8f431d4303f8e501cb0a0374a10cc68d71836": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "price",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "purchased",
+              "type": "bool"
+            }
+          ],
+          "name": "ProductCreated",
+          "type": "event",
+          "signature": "0xbc59c0c8165864dcceb377dd07d8f431d4303f8e501cb0a0374a10cc68d71836"
+        },
+        "0x79558d0d7d4d900e2f15c4cc0a665f1acdbe415e44de900ecdd1e5bf12b56f4e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "price",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "purchased",
+              "type": "bool"
+            }
+          ],
+          "name": "ProductPurchased",
+          "type": "event",
+          "signature": "0x79558d0d7d4d900e2f15c4cc0a665f1acdbe415e44de900ecdd1e5bf12b56f4e"
+        }
+      },
+      "links": {},
+      "address": "0x5975c3393153e92B0f4aB5746f489D858Ba91856",
+      "transactionHash": "0xd30326725820b7dd1d93e7d9761609896e95ed4d2949ed96e86cb20ebebcdb07"
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2020-01-18T21:32:49.647Z",
+  "updatedAt": "2020-01-19T17:53:42.825Z",
   "devdoc": {
     "methods": {}
   },
