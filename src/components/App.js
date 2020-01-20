@@ -2,36 +2,60 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 //import logo from '../logo.png';
 //import './App.css';
+import eShop from '../abis/eShop.json'
 
 
 class App extends Component {
 
-  async componentWillMount(){
-    await this.loadweb3
-    await this.loadBlockchainData
+  async componentWillMount() {
+    await this.loadweb3()
+    await this.loadBlockchainData()
   }
 
-  async loadweb3(){
-    if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-    }
-    else if (window.web3) {
-        window.web3 = new Web3(window.web3.currentProvider);
-    }
-    // Non-dapp browsers...
-    else {
-        window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
-    }
+  async loadweb3() {
+
+      if (window.ethereum) {
+          window.web3 = new Web3(window.ethereum)
+          await window.ethereum.enable()
+      }
+      else if (window.web3) {
+          window.web3 = new Web3(window.web3.currentProvider)
+      }
+      // Non-dapp browsers...
+      else {
+          window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      }
   }
 
   async loadBlockchainData() {
     const web3 = window.web3
+
     //load accounts
     const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
+    this.setState({account: accounts[0]})
+    const networkId = await web3.eth.net.getId()
+    const networkData = eShop.networks[networkId]
+
+    if(networkData) {
+      const eshop = web3.eth.Contract(eShop.abi, networkData.address)
+      console.log(eshop)
+    } else {
+
+    }
 
 
+
+
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: '',
+      productCount: 0,
+      products: [],
+      loading: true
+    }
   }
 
   render() {
@@ -47,6 +71,12 @@ class App extends Component {
         >
           Dapp eShop Blockchain Marketplace
               </a>
+              <ul className="navbar-nav px-3">
+          <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
+            <small className="text-white">
+            <span id="account">{this.state.account}</span></small>
+          </li>
+        </ul>
             </nav>
           <div className="container-fluid mt-5">
             <div className="row">
