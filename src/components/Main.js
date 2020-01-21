@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 class Main extends Component {
 
-  render() {
-    return (
+  render(){
+    return(
       <div id="content">
         <h1>Add Product</h1>
         <form onSubmit={(event) => {
@@ -32,7 +32,7 @@ class Main extends Component {
           </div>
           <button type="submit" className="btn btn-primary">Add Product</button>
         </form>
-        <p>&nbsp;</p>
+        <p> </p>
         <h2>Buy Product</h2>
         <table className="table">
           <thead>
@@ -45,30 +45,27 @@ class Main extends Component {
             </tr>
           </thead>
           <tbody id="productList">
-            { this.props.products.map((product, key) => {
-              return(
-                <tr key={key}>
-                  <th scope="row">{product.id.toString()}</th>
-                  <td>{product.name}</td>
-                  <td>{window.web3.utils.fromWei(product.price.toString(), 'Ether')} Eth</td>
-                  <td>{product.owner}</td>
-                  <td>
-                    { !product.purchased
-                      ? <button
-                          name={product.id}
-                          value={product.price}
-                          onClick={(event) => {
-                            this.props.purchaseProduct(event.target.name, event.target.value)
-                          }}
-                        >
-                          Buy
-                        </button>
-                      : null
-                    }
-                    </td>
-                </tr>
-              )
-            })}
+            <tr>
+              <th scope="row">1</th>
+              <td>iPhone x</td>
+              <td>1 Eth</td>
+              <td>0x39C7BC5496f4eaaa1fF75d88E079C22f0519E7b9</td>
+              <td><button className="buyButton">Buy</button></td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Macbook Pro</td>
+              <td>3 eth</td>
+              <td>0x39C7BC5496f4eaaa1fF75d88E079C22f0519E7b9</td>
+              <td><button className="buyButton">Buy</button></td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Airpods</td>
+              <td>0.5 eth</td>
+              <td>0x39C7BC5496f4eaaa1fF75d88E079C22f0519E7b9</td>
+              <td><button className="buyButton">Buy</button></td>
+            </tr>
           </tbody>
         </table>
       </div>

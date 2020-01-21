@@ -1427,10 +1427,16 @@
       "links": {},
       "address": "0x8051eD22C6AB9333DAa2E32eC5284B9d394eb962",
       "transactionHash": "0xce83e6c6067ac5caaefd9eb410ee8c53297db30bf3edad5e3f698785facb2022"
+    },
+    "1579631317205": {
+      "events": {},
+      "links": {},
+      "address": "0x0b12E5160A749353d5ea5c9a55FBCfe4B5AfFb69",
+      "transactionHash": "0x98e596b4f78bb1c5a424bd526aaa88f0ec3349bb0114d9546923c44bcafca449"
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2020-01-20T19:18:22.122Z",
+  "updatedAt": "2020-01-21T19:40:03.286Z",
   "devdoc": {
     "methods": {}
   },

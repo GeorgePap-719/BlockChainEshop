@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 //import logo from '../logo.png';
 //import './App.css';
-import eShop from '../abis/eShop.json'
+import eShop from '../abis/eShop.json';
+import Navbar from './Navbar';
+import Main from './Main';
 
 
 class App extends Component {
@@ -38,13 +40,11 @@ class App extends Component {
 
     if(networkData) {
       const eshop = web3.eth.Contract(eShop.abi, networkData.address)
-      console.log(eshop)
+      this.setState({eshop})
+      this.setState({loading: false})
     } else {
-
+      window.alert("eShop contract not deployed to detected network")
     }
-
-
-
 
   }
 
@@ -59,43 +59,45 @@ class App extends Component {
   }
 
   render() {
-
     return (
       <div>
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-        <a
-          className="navbar-brand col-sm-3 col-md-2 mr-0"
-          href="https://github.com/GeorgePap-719/BlockChainEshop"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Dapp eShop Blockchain Marketplace
-              </a>
-              <ul className="navbar-nav px-3">
-          <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
-            <small className="text-white">
-            <span id="account">{this.state.account}</span></small>
-          </li>
-        </ul>
-            </nav>
+        <Navbar account={this.state.account} />
           <div className="container-fluid mt-5">
             <div className="row">
-        <div  className="container-fluid mt-5">
-          <div className="row">
-            <main role="main" className="col-lg-12 d-flex">
-            </main>
-            <h1>Dapp eShop</h1>
-            <p>
-            Edit <code>src/components/App.js</code> and save to reload.
-            </p>
+              <main role="main" className="col-lg-12 d-flex">
+              { this.state.loading
+                 ? <div id="loader" className="text-center"><p className="text-center">Loading...</p></div>
+                 : <Main/>
+               }
+              </main>
             </div>
           </div>
         </div>
-
-      </div>
-    </div>
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default App;
