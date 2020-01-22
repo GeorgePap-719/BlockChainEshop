@@ -40,7 +40,18 @@ class App extends Component {
 
     if(networkData) {
       const eshop = web3.eth.Contract(eShop.abi, networkData.address)
-      this.setState({eshop})
+      this.setState({ eshop })
+      this.setState({loading: false})
+      const productCount = await eshop.methods.productCount().call()
+      this.setState({ productCount })
+      //Load products checkValidServiceWorker
+      for (var i = 1; i <= productCount; i++) {
+        const product = await eshop.methods.products(i).call()
+        this.setState({
+          products: [...this.state.products, product]
+        })
+      }
+      console.log(productCount.toString());
       this.setState({loading: false})
     } else {
       window.alert("eShop contract not deployed to detected network")
@@ -56,7 +67,28 @@ class App extends Component {
       products: [],
       loading: true
     }
+    this.createProduct = this.createProduct.bind(this)
+    this.purchaseProduct = this.purchaseProduct.bind(this)
   }
+
+  createProduct(name, price) {
+    this.setState({loading: true})
+    this.state.eshop.methods.createProduct(name, price).send({from: this.state.account}).once('receipt',(receipt) =>  {
+      this.setState({loading: false})
+    })
+  }
+
+  purchaseProduct(id, price) {
+    this.setState({loading: true})
+    this.state.eshop.methods.purchaseProduct(id)
+    .send({from: this.state.account, value: price}).once
+    ('receipt',(receipt) =>  {
+      this.setState({loading: false})
+    })
+  }
+
+
+
 
   render() {
     return (
@@ -67,7 +99,10 @@ class App extends Component {
               <main role="main" className="col-lg-12 d-flex">
               { this.state.loading
                  ? <div id="loader" className="text-center"><p className="text-center">Loading...</p></div>
-                 : <Main/>
+                 : <Main
+                  products={this.state.products}
+                  createProduct={this.createProduct}
+                  purchaseProduct={this.purchaseProduct} />
                }
               </main>
             </div>

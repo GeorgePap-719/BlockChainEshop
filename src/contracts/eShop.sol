@@ -46,7 +46,7 @@ event ProductPurchased(
     emit ProductCreated(productCount, _name, _price, msg.sender, false);
   }
 
-function purchasedProduct(uint _id) public payable {
+function purchaseProduct(uint _id) public payable {
   //Fetch the Product
   Product memory _product = products[_id];
   //Fetch the owner
