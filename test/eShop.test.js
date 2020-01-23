@@ -81,7 +81,7 @@ contract('eShop', ([deployer , seller , buyer]) => {
       oldSellerBalance = new web3.utils.BN(oldSellerBalance)
 
       //Success: Buyer makes purchase
-      result = await eshop.purchasedProduct(productCount, {from: buyer, value: web3.utils.toWei('1', 'Ether')})
+      result = await eshop.purchaseProduct(productCount, {from: buyer, value: web3.utils.toWei('1', 'Ether')})
 
       //Check logs
       const event = result.logs[0].args
@@ -105,13 +105,13 @@ contract('eShop', ([deployer , seller , buyer]) => {
       assert.equal(newSellerBalance.toString(), expectedBalance.toString())
 
       //Failure: Tries to buy a product that does not exist, i,e., product must have valid id
-      await eshop.purchasedProduct(99, { from: buyer, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected
+      await eshop.purchaseProduct(99, { from: buyer, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected
       //Failure:Buyer tries to buy without enough ether
-      await eshop.purchasedProduct(productCount, { from: buyer, value: web3.utils.toWei('0.5', 'Ether')}).should.be.rejected
+      await eshop.purchaseProduct(productCount, { from: buyer, value: web3.utils.toWei('0.5', 'Ether')}).should.be.rejected
       //Failure: Tries to buy a product , i.e., product cant be purchased twice
-      await eshop.purchasedProduct(productCount, { from: deployer, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected
+      await eshop.purchaseProduct(productCount, { from: deployer, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected
       //Failure: Buyer tries to buy again i.e., buyer cant be the seller
-      await eshop.purchasedProduct(productCount, { from: buyer, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected
+      await eshop.purchaseProduct(productCount, { from: buyer, value: web3.utils.toWei('1', 'Ether')}).should.be.rejected
     })
   })
 })

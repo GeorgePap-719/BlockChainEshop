@@ -31,12 +31,11 @@ class App extends Component {
 
   async loadBlockchainData() {
     const web3 = window.web3
-
     //load accounts
     const accounts = await web3.eth.getAccounts()
-    this.setState({account: accounts[0]})
+    this.setState({ account: accounts[0] })
     const networkId = await web3.eth.net.getId()
-    const networkData = eShop.networks[networkId]
+    const networkData =  eShop.networks[networkId]
 
     if(networkData) {
       const eshop = web3.eth.Contract(eShop.abi, networkData.address)
@@ -87,9 +86,6 @@ class App extends Component {
     })
   }
 
-
-
-
   render() {
     return (
       <div>
@@ -111,28 +107,5 @@ class App extends Component {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default App;
