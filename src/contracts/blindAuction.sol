@@ -1,43 +1,44 @@
 pragma solidity >0.4.23 <0.7.0;
 
 //TODO modify for eshp
-contract BlindAuction {
+contract blindAuction {
     struct Bid {
         bytes32 blindedBid;
         uint deposit;
     }
 
     address payable public beneficiary;
+    address payable public courier;//custom
     uint public biddingEnd;
     uint public revealEnd;
     bool public ended;
 
     mapping(address => Bid[]) public bids;
 
-    address public highestBidder;
-    uint public highestBid;
+    address public lowestBidder;//highestBidder;
+    uint public lowestBid;//highestBid;
 
     // Allowed withdrawals of previous bids
     mapping(address => uint) pendingReturns;
 
-    event AuctionEnded(address winner, uint highestBid);
+    event AuctionEnded(address winner, uint lowestBid);
 
     /// Modifiers are a convenient way to validate inputs to
     /// functions. `onlyBefore` is applied to `bid` below:
     /// The new function body is the modifier's body where
     /// `_` is replaced by the old function body.
-    modifier onlyBefore(uint _time) {require(block.timestamp < _time);
+    modifier onlyBefore(uint _time) {require(now < _time);
         _;}
-    modifier onlyAfter(uint _time) {require(block.timestamp > _time);
+    modifier onlyAfter(uint _time) {require(now > _time);
         _;}
 
     constructor(
         uint _biddingTime,
         uint _revealTime,
         address payable _beneficiary
-    ) {
+    ) public {
         beneficiary = _beneficiary;
-        biddingEnd = block.timestamp + _biddingTime;
+        biddingEnd = now + _biddingTime;
         revealEnd = biddingEnd + _revealTime;
     }
 
@@ -90,6 +91,7 @@ contract BlindAuction {
             }
             refund += bidToCheck.deposit;
             if (!fake && bidToCheck.deposit >= value) {
+                //Needs checking here!
                 if (placeBid(msg.sender, value))
                     refund -= value;
             }
@@ -121,9 +123,12 @@ contract BlindAuction {
     onlyAfter(revealEnd)
     {
         require(!ended);
-        emit AuctionEnded(highestBidder, highestBid);
+        emit AuctionEnded(lowestBidder, lowestBid);
         ended = true;
-        beneficiary.transfer(highestBid);
+
+        courier.transfer(lowestBid);
+        //beneficiary.transfer(lowestBid);
+        //TODO here we will prob set the money flow
     }
 
     // This is an "internal" function which means that it
@@ -132,15 +137,16 @@ contract BlindAuction {
     function placeBid(address bidder, uint value) internal
     returns (bool success)
     {
-        if (value <= highestBid) {
+        if (value >= lowestBid) {
             return false;
         }
-        if (highestBidder != address(0)) {
-            // Refund the previously highest bidder.
-            pendingReturns[highestBidder] += highestBid;
+        if (lowestBidder != address(0)) {
+            // Refund the previously lowestBidder bidder.
+            pendingReturns[lowestBidder] += lowestBid;
         }
-        highestBid = value;
-        highestBidder = bidder;
+        lowestBid = value;
+        lowestBidder = bidder;
+        courier = msg.sender;
         return true;
     }
 }

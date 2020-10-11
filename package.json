@@ -17,15 +17,18 @@
     "react": "16.8.4",
     "react-bootstrap": "1.0.0-beta.5",
     "react-dom": "16.8.4",
-    "react-scripts": "^3.3.0",
+    "react-scripts": "^3.4.1",
+    "solc": "^0.6.4",
     "truffle": "5.0.5",
     "web3": "1.0.0-beta.55"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-deploy": "open-cli http://UthEshop:3001 && node bin/www",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "stop": "pkill --signal SIGNIT eshopBlockchain"
   },
   "eslintConfig": {
     "extends": "react-app"

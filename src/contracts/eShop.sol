@@ -1,19 +1,20 @@
 pragma solidity ^0.5.0;
 
 contract eShop {
-  string public name;
-  uint public productCount = 0;
-  mapping(uint => Product) public products;
+    string public name;
+    uint public productCount = 0;
+    mapping(uint => Product) public products;
+    uint value;//value == price
 
-  //Safely Remote
-  address payable public seller;
-  address payable public buyer;
-  //Check if its preferable to transfer
-  //the safety mechanism in another contract
+    //Safely Remote
+    address payable public seller;
+    address payable public buyer;
+    //Check if its preferable to transfer
+    //the safety mechanism in another contract TODO
 
-  enum State { Created, Locked, Release, Inactive }
-  // The state variable has a default value of the first member(Created)
-  State public state;
+    enum State {Created, Locked, Release, Inactive}
+    // The state variable has a default value of the first member(Created)
+    State public state;
 
   modifier condition(bool _condition) {
        require(_condition);
@@ -45,20 +46,22 @@ contract eShop {
     }
 
 
-struct Product {
-    uint id;
-    string name;
-    uint price;
-    address payable owner;
-    bool purchased;
-  }
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address payable owner;
+        bool purchased;
+        State state;
+    }
 
 event ProductCreated(
-  uint id,
-  string name,
-  uint price,
-  address payable owner,
-  bool purchased
+    uint id,
+    string name,
+    uint price,
+    address payable owner,
+    bool purchased,
+    State state
 );
 
 event ProductPurchased(
@@ -73,18 +76,17 @@ event ProductPurchased(
     event Aborted();
     event PurchaseConfirmed();
     event ItemReceived();
-    event SellerRefunded()
+    event SellerRefunded();
 
   // Ensure that `msg.value` is an even number.
   // Division will truncate if it is an odd number.
   // Check via multiplication that it wasn't an odd number
-  constructor() public {
-    name = "Dapp eShop";
-
-    seller = msg.sender;
-    value = msg.value / 2;
-    require((2 * value) == msg.value, "Value has to be even.");
-  }
+    constructor() public payable {
+        name = "Dapp eShop";
+        seller = msg.sender;
+        value = msg.value / 2;
+        require((2 * value) == msg.value, "Value has to be even.");
+    }
 
   /// Abort the purchase and reclaim the ether.
   /// Can only be called by the seller before
@@ -97,26 +99,29 @@ event ProductPurchased(
     emit Aborted();
     state = State.Inactive;
     // We use transfer here directly. It is
-    // reentrancy-safe, because it is the
-    // last call in this function and we
-    // already changed the state.
-    seller.transfer(address(this).balance);
-   }
+      // reentrancy-safe, because it is the
+      // last call in this function and we
+      // already changed the state.
+      seller.transfer(address(this).balance);
+  }
 
-   /// Confirm the purchase as buyer.
-   /// Transaction has to include `2 * value` ether.
-   /// The ether will be locked until confirmReceived
-   /// is called.
-   function confirmPurchase()
-       public
-       inState(State.Created)
-       condition(msg.value == (2 * value))
-       payable
-   {
-       emit PurchaseConfirmed();
-       buyer = msg.sender;
-       state = State.Locked;
-   }
+    /// Confirm the purchase as buyer.
+    /// Transaction has to include `2 * value` ether.
+    /// The ether will be locked until confirmReceived
+    /// is called.
+    //Note: i will change this , to be able to be called
+    //by both parties , so the buyer can have some avtual
+    //time to change his time and abort the transaction
+    function confirmPurchase(uint _id)
+    public
+    inState(State.Created)
+    condition(msg.value == (2 * value))
+    payable
+    {
+        emit PurchaseConfirmed();
+        buyer = msg.sender;
+        state = State.Locked;
+    }
 
    /// Confirm that you (the buyer) received the item.
    /// This will release the locked ether.
@@ -149,19 +154,28 @@ event ProductPurchased(
 
        seller.transfer(3 * value);
    }
-}
 
   function createProduct(string memory _name, uint _price) public {
-    //Require a names
-    require(bytes(_name).length > 0);
-    //Require a vaild price
-    require(_price > 0);
-    //increament product productCount
-    productCount ++;
-    //create the product
-    products[productCount] = Product(productCount, _name, _price, msg.sender, false);
-    //tirgger an event
-    emit ProductCreated(productCount, _name, _price, msg.sender, false);
+      //Require a names
+      require(bytes(_name).length > 0);
+      //Require a valid price
+      require(_price > 0);
+      //increase product productCount
+      productCount ++;
+      //create the product
+      products[productCount] = Product(
+          productCount,
+          _name,
+          _price,
+          msg.sender,
+          false,
+          State.Created);
+      //trigger an event
+      emit ProductCreated(productCount, _name, _price, msg.sender, false, State.Created);
+
+
+      //Seller must also pay 2*value of the product he lists.
+
   }
 
 function purchaseProduct(uint _id) public payable {
@@ -179,15 +193,22 @@ function purchaseProduct(uint _id) public payable {
   require(_seller != msg.sender);
   //Transfer ownership to the buyer
   _product.owner = msg.sender;
-  //Mark as purchasedProduct
-  _product.purchased = true;
-  //update the product
-  products[_id] = _product;
-  //Pay the seller by sending them Ether
-  address(_seller).transfer(msg.value);
-  //trigger an event
-  emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
+    //Mark as purchasedProduct
+    _product.purchased = true;
+    //update the product
+    products[_id] = _product;
+    //Pay the seller by sending them Ether
+    address(_seller).transfer(msg.value);
+    //trigger an event
+    emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
 }
+
+    function purchaseProductPhase1(uint _id) public payable {
+        //Function to lock the ether first
+        //then we will get to the secondphase which will be
+        //either confirm or Abort
+
+    }
 
 
 }
