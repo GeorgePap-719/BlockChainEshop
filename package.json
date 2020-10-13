@@ -1,7 +1,7 @@
 {
   "name": "eshopBlockchain",
   "version": "1.0.0",
-  "description": "An etherem marketplace",
+  "description": "An ethereum marketplace",
   "main": "truffle-config.js",
   "dependencies": {
     "babel-polyfill": "6.26.0",
