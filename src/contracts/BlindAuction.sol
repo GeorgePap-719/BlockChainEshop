@@ -1,6 +1,6 @@
 pragma solidity >0.4.23 <0.7.0;
 
-//TODO modify for eshp
+//TODO modify for e-shop
 contract BlindAuction {
     struct Bid {
         bytes32 blindedBid;
@@ -31,14 +31,16 @@ contract BlindAuction {
     modifier onlyAfter(uint _time) {require(block.timestamp > _time);
         _;}
 
-    constructor(
-        uint _biddingTime,
-        uint _revealTime,
-        address payable _beneficiary
-    ) {
-        beneficiary = _beneficiary;
-        biddingEnd = block.timestamp + _biddingTime;
-        revealEnd = biddingEnd + _revealTime;
+    constructor (
+    //        uint _biddingTime,
+    //        uint _revealTime,
+    //        address payable _beneficiary
+    ) public  {
+        beneficiary = msg.sender;
+        //_beneficiary;
+        //        biddingEnd = block.timestamp + _biddingTime;
+        //        revealEnd = biddingEnd + _revealTime;
+        //TODO transfer them to separate function
     }
 
     /// Place a blinded bid with `_blindedBid` =

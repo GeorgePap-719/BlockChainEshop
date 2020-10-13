@@ -174,7 +174,7 @@ event ProductPurchased(
       emit ProductCreated(productCount, _name, _price, msg.sender, false, State.Created);
 
 
-      //Seller must also pay 2*value of the product he lists.
+      //Seller must also pay 2*value of the product he lists. TODO
 
   }
 

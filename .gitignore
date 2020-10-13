@@ -1,5 +1,5 @@
-/node_modules
-
 *.babelrc
 
-/build
+/node_modules/
+/build/
+/.idea/
