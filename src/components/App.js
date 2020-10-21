@@ -3,12 +3,12 @@ import Web3 from 'web3';
 //import logo from '../logo.png';
 import './css/App.css';
 import eShop from '../abis/eShop.json';
-import blindAuction from '../abis/BlindAuction.json';
+import BlindAuction from '../abis/BlindAuction.json';
 import Navbar from './Navbar';
 import Main from './Main';
 
 process.title = eShop;
-process.title = blindAuction;
+process.title = BlindAuction;
 
 class App extends Component {
 
@@ -32,6 +32,10 @@ class App extends Component {
         }
     }
 
+    /*
+     * Retrieving data from the blockChain/Smart Contracts.
+     *
+     */
     async loadBlockChainData() {
         const web3 = window.web3
         //load accounts
@@ -39,20 +43,16 @@ class App extends Component {
         this.setState({account: accounts[0]})
         const networkId = await web3.eth.net.getId()
 
+        //Loading the contract's networkData ..
         const networkDataEshop = eShop.networks[networkId]
-        const networkDataBid = blindAuction.networks[networkId]
-        console.log(networkDataBid)
+        const networkDataBid = BlindAuction.networks[networkId]
 
-        //TODO this networkdata bid is empty
-        if (networkDataEshop && networkDataBid) {
-            //Loading the contracts
+        //Load eShop
+        if (networkDataEshop) {
             const eshop = web3.eth.Contract(eShop.abi, networkDataEshop.address)
             this.setState({eshop})
-            // eslint-disable-next-line
-            const blindAuction = web3.eth.Contract(blindAuction.abi, networkDataBid.address)
-            this.setState({blindAuction})
 
-            //Loading arrays from the blockchain
+            //Loading arrays from the blockChain
             const productCount = await eshop.methods.productCount().call()
             this.setState({productCount})
             //Load products checkValidServiceWorker
@@ -68,6 +68,15 @@ class App extends Component {
             window.alert("eShop contract can not be deployed to detected network")
         }
 
+        //Load BlindAuction
+        if (networkDataBid) {
+            // eslint-disable-next-line
+            const blindAuction = web3.eth.Contract(BlindAuction.abi, networkDataBid.address)
+            this.setState({blindAuction})
+        } else {
+            window.alert("BlindAuction contract can not be deployed to detected network")
+        }
+
     }
 
     constructor(props) {
@@ -80,6 +89,7 @@ class App extends Component {
         }
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
+        this.newAuction = this.newAuction.bind(this)
         this.bidProduct = this.bidProduct.bind(this)
     }
 
@@ -107,11 +117,33 @@ class App extends Component {
     }
 
     //Function for calling the corresponding function inside the smart contract
-    bidProduct(id) {
-        // this.setState({loading: true})
-        //this.state.esho
+    bidProduct(price) {
+        this.setState({loading: true})
+        this.state.blindAuction.methods.bid(price)
+            .send({from: this.state.account, value: price})
+            .once('receipt', (receipt) => {
 
+            })
+        this.setState({loading: false})
+        //
     }
+
+    newAuction(biddingEnd, revealEnd) {
+        this.setState({loading: true});
+        this.state.blindAuction.methods.newAuction(biddingEnd, revealEnd)
+            .send({from: this.state.account})
+            .once('receipt', (receipt) => {
+
+            });
+        this.setState({loading: false})
+        //
+    }
+
+    // window.onload = function () {
+    //     var fiveMinutes = 60 * 5,
+    //         display = document.querySelector('#time');
+    //     startTimer(fiveMinutes, display);
+    // };
 
     render() {
         return (
@@ -126,7 +158,9 @@ class App extends Component {
                                 : <Main
                                     products={this.state.products}
                                     createProduct={this.createProduct}
-                                    purchaseProduct={this.purchaseProduct}/>
+                                    purchaseProduct={this.purchaseProduct}
+                                    bidProduct={this.bidProduct}
+                                    newAuction={this.newAuction}/>
                             }
                         </main>
                     </div>

@@ -1,5 +1,7 @@
 pragma solidity ^0.5.0;
 
+import "./BlindAuction.sol";
+
 contract eShop {
     string public name;
     uint public productCount = 0;
@@ -88,6 +90,8 @@ event ProductPurchased(
         require((2 * value) == msg.value, "Value has to be even.");
     }
 
+    //BlindAuction blindAuction = new BlindAuction(); we need this? TODO
+
   /// Abort the purchase and reclaim the ether.
   /// Can only be called by the seller before
  /// the contract is locked.
@@ -99,11 +103,28 @@ event ProductPurchased(
     emit Aborted();
     state = State.Inactive;
     // We use transfer here directly. It is
-      // reentrancy-safe, because it is the
+      // repentantly-safe, because it is the
       // last call in this function and we
       // already changed the state.
       seller.transfer(address(this).balance);
   }
+
+    //Internal function so we can set the auction for the new
+    //Item
+    //TODO unused argument
+    function newAuctionInit (address payable _beneficiary) internal {
+        uint _biddingTime = 60;
+        uint _revealTime = 15;
+        //Call the BlindAuction contract method TODO
+        // newAuction(_biddingTime, _revealTime, _beneficiary)
+        BlindAuction blindAuction = new BlindAuction();
+        blindAuction.newAuction(
+            _biddingTime,
+            _revealTime
+//            _beneficiary
+        );
+
+    }
 
     /// Confirm the purchase as buyer.
     /// Transaction has to include `2 * value` ether.
@@ -201,14 +222,19 @@ function purchaseProduct(uint _id) public payable {
     address(_seller).transfer(msg.value);
     //trigger an event
     emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
+
+    //Here we will call the newAuction TODO..
+    //pass the arguments.
+    //newAuctionInit(_seller); TODO?
 }
 
-    function purchaseProductPhase1(uint _id) public payable {
-        //Function to lock the ether first
-        //then we will get to the secondphase which will be
-        //either confirm or Abort
-
-    }
+//    function purchaseProductPhase1(uint _id) public payable {
+//        //Function to lock the ether first
+//        //then we will get to the secondphase which will be
+//        //either confirm or Abort
+         // TODO impl
+//
+//    }
 
 
 }

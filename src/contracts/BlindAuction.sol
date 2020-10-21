@@ -7,10 +7,14 @@ contract BlindAuction {
         uint deposit;
     }
 
-    address payable public beneficiary;
+    address payable public beneficiary;//seller
     uint public biddingEnd;
     uint public revealEnd;
     bool public ended;
+
+    //Safely Remote
+    address payable public seller;
+    address payable public buyer;
 
     mapping(address => Bid[]) public bids;
 
@@ -21,6 +25,7 @@ contract BlindAuction {
     mapping(address => uint) pendingReturns;
 
     event AuctionEnded(address winner, uint highestBid);
+    event NewAuctionBegins();
 
     /// Modifiers are a convenient way to validate inputs to
     /// functions. `onlyBefore` is applied to `bid` below:
@@ -31,16 +36,33 @@ contract BlindAuction {
     modifier onlyAfter(uint _time) {require(block.timestamp > _time);
         _;}
 
+    modifier onlySeller() {
+        require(
+            msg.sender == seller,
+            "Only seller can call this."
+        );
+        _;
+    }
+
     constructor (
     //        uint _biddingTime,
     //        uint _revealTime,
     //        address payable _beneficiary
-    ) public  {
+    ) public payable {
         beneficiary = msg.sender;
-        //_beneficiary;
-        //        biddingEnd = block.timestamp + _biddingTime;
-        //        revealEnd = biddingEnd + _revealTime;
-        //TODO transfer them to separate function
+    }
+
+    function newAuction (
+        uint _biddingTime,
+        uint _revealTime
+//        address payable _beneficiary
+    )
+    public
+    {
+        emit NewAuctionBegins();
+//        beneficiary = _beneficiary;
+        biddingEnd = block.timestamp + _biddingTime;
+        revealEnd = biddingEnd + _revealTime;
     }
 
     /// Place a blinded bid with `_blindedBid` =
@@ -103,6 +125,7 @@ contract BlindAuction {
     }
 
     /// Withdraw a bid that was overbid.
+    //This cant be called by js
     function withdraw() public {
         uint amount = pendingReturns[msg.sender];
         if (amount > 0) {
@@ -118,6 +141,9 @@ contract BlindAuction {
 
     /// End the auction and send the highest bid
     /// to the beneficiary.
+    // Maybe only the seller can call this?
+    // TODO
+    //Or let the js call this
     function auctionEnd()
     public
     onlyAfter(revealEnd)
