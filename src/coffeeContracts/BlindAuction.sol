@@ -1,7 +1,14 @@
-pragma solidity >0.4.23 <0.7.0;
+// SPDX-License-Identifier: Do What The F*ck You Want To Public License
+
+/*
+ * Everything in coffeeContracts directory will not be compiled.
+ * This is necessary as they do not have been updated to compile with solidity 0.7.4
+ * Version : solidity 0.5.8
+*/
+pragma solidity 0.7.4;
 
 //TODO modify for e-shop
-contract BlindAuction {
+abstract contract BlindAuction {
     struct Bid {
         bytes32 blindedBid;
         uint deposit;
@@ -125,7 +132,7 @@ contract BlindAuction {
     }
 
     /// Withdraw a bid that was overbid.
-    //This cant be called by js
+    //This cant be called by js?
     function withdraw() public {
         uint amount = pendingReturns[msg.sender];
         if (amount > 0) {

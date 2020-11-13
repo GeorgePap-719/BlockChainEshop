@@ -49,7 +49,7 @@ class App extends Component {
 
         //Load eShop
         if (networkDataEshop) {
-            const eshop = web3.eth.Contract(eShop.abi, networkDataEshop.address)
+            const eshop = new web3.eth.Contract(eShop.abi, networkDataEshop.address)
             this.setState({eshop})
 
             //Loading arrays from the blockChain
@@ -68,14 +68,24 @@ class App extends Component {
             window.alert("eShop contract can not be deployed to detected network")
         }
 
-        //Load BlindAuction
-        if (networkDataBid) {
-            // eslint-disable-next-line
-            const blindAuction = web3.eth.Contract(BlindAuction.abi, networkDataBid.address)
-            this.setState({blindAuction})
-        } else {
-            window.alert("BlindAuction contract can not be deployed to detected network")
-        }
+        //delete it if we wont use it anymore TODO
+        // //Load BlindAuction
+        // if (networkDataBid) {
+        //     // eslint-disable-next-line
+        //     const blindAuction = web3.eth.Contract(BlindAuction.abi, networkDataBid.address)
+        //     this.setState({blindAuction})
+        //
+        //     //Load Bidding,Reveal time
+        //     // const biddingEnd = await blindAuction.methods.biddingEnd().call()
+        //     // this.setState({biddingEnd})
+        //     //
+        //     // const revealEnd = await blindAuction.methods.revealEnd().call()
+        //     // this.setState({revealEnd})
+        //
+        //
+        // } else {
+        //     window.alert("BlindAuction contract can not be deployed to detected network")
+        // }
 
     }
 
@@ -118,32 +128,38 @@ class App extends Component {
 
     //Function for calling the corresponding function inside the smart contract
     bidProduct(price) {
-        this.setState({loading: true})
-        this.state.blindAuction.methods.bid(price)
-            .send({from: this.state.account, value: price})
-            .once('receipt', (receipt) => {
-
-            })
-        this.setState({loading: false})
+        // this.setState({loading: true})
+        // this.state.blindAuction.methods.bid(price)
+        //     .send({from: this.state.account, value: price})
+        //     .once('receipt', (receipt) => {
         //
+        //     })
+        // this.setState({loading: false})
+        // //
     }
 
     newAuction(biddingEnd, revealEnd) {
-        this.setState({loading: true});
-        this.state.blindAuction.methods.newAuction(biddingEnd, revealEnd)
-            .send({from: this.state.account})
-            .once('receipt', (receipt) => {
-
-            });
-        this.setState({loading: false})
+        // this.setState({loading: true});
+        // this.state.blindAuction.methods.newAuction(biddingEnd, revealEnd)
+        //     .send({from: this.state.account})
+        //     .once('receipt', (receipt) => {
+        //
+        //     });
+        // this.setState({loading: false})
         //
     }
 
-    // window.onload = function () {
-    //     var fiveMinutes = 60 * 5,
-    //         display = document.querySelector('#time');
-    //     startTimer(fiveMinutes, display);
-    // };
+    /// Reveal your blinded bids. You will get a refund for all
+    /// correctly blinded invalid bids and for all bids except for
+    /// the totally highest.
+    revealBids() {
+        //TODO
+    }
+
+    //Withdraw a bid that was overbid.
+    withdraw() {
+        //TODO
+    }
 
     render() {
         return (

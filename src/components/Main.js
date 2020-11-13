@@ -1,9 +1,54 @@
 import React, {Component} from 'react';
 
+//TODO create arguments for dynamic calls, aka biddingTime, revealTime.
+function auctionHouse() {
+
+    let biddingEnd = 10;
+    let revealEnd = biddingEnd + 10; // biddingTime + reveal
+    let realTime;
+    let countDown;
+    let secondCountDown;
+
+    countDown = setInterval(function () {
+
+        realTime = --biddingEnd;
+        // console.log(realTime);
+
+        document.getElementById("bidding").innerHTML = realTime + ":s";
+
+
+        if (realTime === 0) {
+            // myButton.addEventListener('click', myFunction); TODO
+            clearInterval(countDown)
+            document.getElementById("bidding").innerHTML = "Closed";
+
+            revealEnd = biddingEnd + 10;
+
+            secondCountDown = setInterval(function () {
+
+                realTime = --revealEnd;
+
+                document.getElementById("reveal").innerHTML = realTime + ":s";
+
+                if (realTime === 0) {
+                    clearInterval(secondCountDown)
+                    document.getElementById("reveal").innerHTML = "Revealed";
+                    //ButtonAction
+                }
+            }, 1000)
+
+
+            // document.getElementById("reveal").innerHTML ="Closed";
+        }
+    }, 1000)
+
+}
+
+
 class Main extends Component {
     bid = 1;
     biddingEnd = 60;
-    revealEnd = 15;
+    revealEnd = 60;
 
     render() {
         return (
@@ -71,9 +116,9 @@ class Main extends Component {
                                             onClick={(event) => {
                                                 this.props.purchaseProduct(event.target.name, event.target.value)
                                                 this.props.newAuction(this.biddingEnd, this.revealEnd)
-                                                // this.props.newAuction(this.biddingEnd, this.revealEnd)
+                                                auctionHouse()
                                             }}>
-                                            Buy
+                                            Buy & Begin Auction
                                         </button>
                                         : null
                                     }
@@ -92,11 +137,14 @@ class Main extends Component {
                         <th scope="col">Name</th>
                         <th scope="col">Price</th>
                         <th scope="col">Owner</th>
-                        <th scope="col">RevealTime</th>
                         <th scope="col">BiddingTime</th>
+                        <th scope="col"></th>
+                        <th scope="col">RevealTime</th>
+                        <th scope="col"></th>
                     </tr>
 
                     </thead>
+
                     <tbody id="ProductsForBiding">
                     {this.props.products.map((product, key) => {
                         return (
@@ -107,8 +155,9 @@ class Main extends Component {
                                 (product.price.toString(), 'Ether')} Eth
                                 </td>
                                 <td>{product.owner}</td>
-                                <td>
-                                    {product.purchased
+                                <td id="bidding"> {}</td>
+                                <td className="bidColumn">
+                                    {this.biddingEnd > 0
                                         ? <button
                                             name={product.id}
                                             value={product.price}
@@ -121,28 +170,58 @@ class Main extends Component {
                                         </button>
                                         : null
                                     }
+
                                 </td>
+                                <td id="reveal">{}</td>
+                                <td>
+                                    {this.biddingEnd === 0
+                                        ? <button
+                                            onClick={(event) => {
+                                                const byte32Bid = window.web3.utils.fromAscii(this.bid)
+                                                this.props.bidProduct(byte32Bid)
+                                                //TODO impl blind auction house
+                                                //TODO change this button to reveal
+                                            }}>
+                                            Reveal
+                                        </button>
+                                        : null
+                                    }
+                                </td>
+
                             </tr>
                         )
                     })
 
                     }
-                    {/*TODO*/}
-                    {/*<input className="bidInput"*/}
-                    {/*       id="productBid"*/}
-                    {/*       type="text"*/}
-                    {/*       ref={(input) => {*/}
-                    {/*           this.bid = input*/}
-                    {/*       }}*/}
-                    {/*       required/>*/}
-
                     </tbody>
                 </table>
 
             </div>
         );
     }
+
+
+    // bidTime = setInterval(function (realTime = this["biddingEnd"]) {
+    //     // let now = new Date().getTime();
+    //
+    //     --realTime;
+    //     // --this["biddingEnd"] ;
+    //
+    //     //realTime = biddingEnd - 1;
+    //     console.log(realTime)
+    //
+    //     document.getElementById("bidding").innerHTML = realTime + ":s";
+    //
+    //     if (realTime === 0) {
+    //         // myButton.addEventListener('click', myFunction); TODO
+    //         clearInterval(this.bidTime)
+    //     }
+    //
+    // }, 1000)
+
+
 }
+
 
 export default Main;
 
