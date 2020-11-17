@@ -21,6 +21,8 @@ contract eShop {
     uint public biddingEnd;
     uint public revealEnd;
     bool public ended;
+    // uint public productWithBidsCount = 0;
+    mapping(uint => ProductWithBids) public internalProducts;
 
     mapping(address => Bid[]) public bids;
 
@@ -38,6 +40,11 @@ contract eShop {
         _;}
     modifier onlyAfter(uint _time) {require(block.timestamp > _time);
         _;}
+    //modified modifiers TODO
+    //    modifier onlyBefore(uint _time) {require(block.timestamp < _time);
+    //        _;}
+    //    modifier onlyAfter(uint _time) {require(block.timestamp > _time);
+    //        _;}
 
     modifier condition(bool _condition) {
         require(_condition);
@@ -80,6 +87,24 @@ contract eShop {
         address payable owner;
         bool purchased;
         State state;
+        uint biddingTime;
+        uint revealTime;
+    }
+
+    struct ProductWithBids {
+        uint id;
+        string name;
+        uint price;
+        address payable owner;
+        address payable beneficiary;
+        bool purchased;
+        State state;
+        mapping(address => Bid[]) bids;
+        uint biddingEnd;
+        uint revealEnd;
+        bool ended;
+        bool biddingTime;
+        bool revealTime;
     }
 
 
@@ -246,86 +271,86 @@ contract eShop {
     /// Abort the purchase and reclaim the ether.
     /// Can only be called by the seller before
     /// the contract is locked.
-    function abort()
-    public
-    onlySeller
-    inState(State.Created)
-    {
-        emit Aborted();
-        state = State.Inactive;
-        // We use transfer here directly. It is
-        // repentantly-safe, because it is the
-        // last call in this function and we
-        // already changed the state.
-        seller.transfer(address(this).balance);
-    }
+//    function abort()
+//    public
+//    onlySeller
+//    inState(State.Created)
+//    {
+//        emit Aborted();
+//        state = State.Inactive;
+//        // We use transfer here directly. It is
+//        // repentantly-safe, because it is the
+//        // last call in this function and we
+//        // already changed the state.
+//        seller.transfer(address(this).balance);
+//    }
 
-    //Internal function so we can set the auction for the new
-    //Item
-    //TODO unused argument
-    function newAuctionInit(address payable _beneficiary) internal {
-        //        uint _biddingTime = 60;
-        //        uint _revealTime = 15;
-        //        //Call the BlindAuction contract method TODO
-        //        // newAuction(_biddingTime, _revealTime, _beneficiary)
-        //        BlindAuction blindAuction = new BlindAuction();
-        //        blindAuction.newAuction(
-        //            _biddingTime,
-        //            _revealTime
-        //        //            _beneficiary
-        //        );
+//    //Internal function so we can set the auction for the new
+//    //Item
+//    //TODO unused argument
+//    function newAuctionInit(address payable _beneficiary) internal {
+//        //        uint _biddingTime = 60;
+//        //        uint _revealTime = 15;
+//        //        //Call the BlindAuction contract method TODO
+//        //        // newAuction(_biddingTime, _revealTime, _beneficiary)
+//        //        BlindAuction blindAuction = new BlindAuction();
+//        //        blindAuction.newAuction(
+//        //            _biddingTime,
+//        //            _revealTime
+//        //        //            _beneficiary
+//        //        );
+//
+//    }
 
-    }
+//    /// Confirm the purchase as buyer.
+//    /// Transaction has to include `2 * value` ether.
+//    /// The ether will be locked until confirmReceived
+//    /// is called.
+//    //Note: i will change this , to be able to be called
+//    //by both parties , so the buyer can have some avtual
+//    //time to change his time and abort the transaction
+//    function confirmPurchase(uint _id)
+//    public
+//    inState(State.Created)
+//    condition(msg.value == (2 * value))
+//    payable
+//    {
+//        emit PurchaseConfirmed();
+//        buyer = msg.sender;
+//        state = State.Locked;
+//    }
 
-    /// Confirm the purchase as buyer.
-    /// Transaction has to include `2 * value` ether.
-    /// The ether will be locked until confirmReceived
-    /// is called.
-    //Note: i will change this , to be able to be called
-    //by both parties , so the buyer can have some avtual
-    //time to change his time and abort the transaction
-    function confirmPurchase(uint _id)
-    public
-    inState(State.Created)
-    condition(msg.value == (2 * value))
-    payable
-    {
-        emit PurchaseConfirmed();
-        buyer = msg.sender;
-        state = State.Locked;
-    }
+//    /// Confirm that you (the buyer) received the item.
+//    /// This will release the locked ether.
+//    function confirmReceived()
+//    public
+//    onlyBuyer
+//    inState(State.Locked)
+//    {
+//        emit ItemReceived();
+//        // It is important to change the state first because
+//        // otherwise, the contracts called using `send` below
+//        // can call in again here.
+//        state = State.Release;
+//
+//        buyer.transfer(value);
+//    }
 
-    /// Confirm that you (the buyer) received the item.
-    /// This will release the locked ether.
-    function confirmReceived()
-    public
-    onlyBuyer
-    inState(State.Locked)
-    {
-        emit ItemReceived();
-        // It is important to change the state first because
-        // otherwise, the contracts called using `send` below
-        // can call in again here.
-        state = State.Release;
-
-        buyer.transfer(value);
-    }
-
-    /// This function refunds the seller, i.e.
-    /// pays back the locked funds of the seller.
-    function refundSeller()
-    public
-    onlySeller
-    inState(State.Release)
-    {
-        emit SellerRefunded();
-        // It is important to change the state first because
-        // otherwise, the contracts called using `send` below
-        // can call in again here.
-        state = State.Inactive;
-
-        seller.transfer(3 * value);
-    }
+//    /// This function refunds the seller, i.e.
+//    /// pays back the locked funds of the seller.
+//    function refundSeller()
+//    public
+//    onlySeller
+//    inState(State.Release)
+//    {
+//        emit SellerRefunded();
+//        // It is important to change the state first because
+//        // otherwise, the contracts called using `send` below
+//        // can call in again here.
+//        state = State.Inactive;
+//
+//        seller.transfer(3 * value);
+//    }
 
     function createProduct(string memory _name, uint _price) public {
         //Require a names
@@ -335,26 +360,60 @@ contract eShop {
         //increase product productCount
         productCount ++;
         //create the product
-        products[productCount] = Product(
-            productCount,
-            _name,
-            _price,
-            msg.sender,
-            false,
-            State.Created);
+        //        products[productCount] = Product(
+        //            productCount,
+        //            _name,
+        //            _price,
+        //            msg.sender,
+        //            false,
+        //            State.Created);
+
+
+        /*
+         * Note how in all the functions, a struct type is assigned to
+         * a local variable with data location storage. This does not copy
+         * the struct but only stores a reference so that assignments
+         * to members of the local variable actually write to the state.
+        */
+
+        ProductWithBids storage newProduct = internalProducts[productCount];
+        //create the product
+        newProduct.id = productCount;
+        newProduct.name = _name;
+        newProduct.price = _price;
+        newProduct.owner = msg.sender;
+        newProduct.beneficiary = msg.sender;
+        newProduct.purchased = false;
+        newProduct.state = State.Created;
+
         //trigger an event
         emit ProductCreated(productCount, _name, _price, msg.sender, false, State.Created);
 
-
         //Seller must also pay 2*value of the product he lists. TODO
+    }
+
+    function beginAuction(ProductWithBids storage product) internal {
+        //
+        // We cannot use "campaigns[campaignID] = Campaign(beneficiary, goal, 0, 0)"
+        // because the RHS creates a memory-struct "Campaign" that contains a mapping.
+        // productWithBidsCount++;
+        ProductWithBids storage newProduct = product;
+
+        //init new Auction
+        newProduct.biddingEnd =  60; //block.timestamp + 60
+        newProduct.revealEnd = newProduct.biddingEnd + 60;
+
+        //TODO modify it so it can support multiple auctions at the same time.
+        biddingEnd = newProduct.biddingEnd;
+        revealEnd = newProduct.revealEnd;
+
 
     }
 
     function purchaseProduct(uint _id) public payable {
         //Fetch the Product
-        Product memory _product = products[_id];
+        ProductWithBids storage _product = internalProducts[_id];
         //Fetch the owner
-
         address payable _seller = _product.owner;
         //Make sure the product has valid id
         require(_product.id > 0 && _product.id <= productCount);
@@ -368,25 +427,31 @@ contract eShop {
         _product.owner = msg.sender;
         //Mark as purchasedProduct
         _product.purchased = true;
-        //update the product
-        products[_id] = _product;
+        //update the product maybe we dont need it anymore cause of storage type
+        //internalProducts[_id] = _product;
         //Pay the seller by sending them Ether
         _seller.transfer(msg.value);
         //trigger an event
         emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
 
-        //Here we will call the newAuction TODO..
-        //pass the arguments.
-        //newAuctionInit(_seller); TODO?
+        //..beginAuction
+        beginAuction(_product);
+
     }
 
-    //    function purchaseProductPhase1(uint _id) public payable {
-    //        //Function to lock the ether first
-    //        //then we will get to the secondphase which will be
-    //        //either confirm or Abort
-    // TODO impl
-    //
-    //    }
+    //Public setter
+    function updateBiddingEnd(uint _id, uint _biddingEnd) public {
+        //Fetch the Product
+        ProductWithBids storage product = internalProducts[_id];
+        //updateTheBidding
+        product.biddingEnd = _biddingEnd;
+    }
+
+
+
+
+
+
 
 
 }

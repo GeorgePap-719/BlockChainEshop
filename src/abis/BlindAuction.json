@@ -9669,15 +9669,13 @@
             }
           ],
           "name": "AuctionEnded",
-          "type": "event",
-          "signature": "0xdaec4582d5d9595688c8c98545fdd1c696d41c6aeaeb636737e84ed2f5c00eda"
+          "type": "event"
         },
         "0x01abca8b1fa21a00a7628a46e1e2c7bd9929c014a47741d62554e4e0088eb5be": {
           "anonymous": false,
           "inputs": [],
           "name": "NewAuctionBegins",
-          "type": "event",
-          "signature": "0x01abca8b1fa21a00a7628a46e1e2c7bd9929c014a47741d62554e4e0088eb5be"
+          "type": "event"
         }
       },
       "links": {},
@@ -9701,8 +9699,7 @@
             }
           ],
           "name": "AuctionEnded",
-          "type": "event",
-          "signature": "0xdaec4582d5d9595688c8c98545fdd1c696d41c6aeaeb636737e84ed2f5c00eda"
+          "type": "event"
         }
       },
       "links": {},
@@ -9726,15 +9723,13 @@
             }
           ],
           "name": "AuctionEnded",
-          "type": "event",
-          "signature": "0xdaec4582d5d9595688c8c98545fdd1c696d41c6aeaeb636737e84ed2f5c00eda"
+          "type": "event"
         },
         "0x01abca8b1fa21a00a7628a46e1e2c7bd9929c014a47741d62554e4e0088eb5be": {
           "anonymous": false,
           "inputs": [],
           "name": "NewAuctionBegins",
-          "type": "event",
-          "signature": "0x01abca8b1fa21a00a7628a46e1e2c7bd9929c014a47741d62554e4e0088eb5be"
+          "type": "event"
         }
       },
       "links": {},
@@ -9742,8 +9737,9 @@
       "transactionHash": "0x0ae7c052fa00d1a10caf358e7b41be79f0ed2f5ee77bf4d809d795b6aa27553f"
     }
   },
-  "schemaVersion": "3.0.16",
-  "updatedAt": "2020-11-12T09:47:00.534Z",
+  "schemaVersion": "3.3.2",
+  "updatedAt": "2020-11-17T13:01:39.358Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
