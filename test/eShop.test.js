@@ -57,7 +57,7 @@ contract('eShop', ([deployer, seller, buyer]) => {
         })
 
         it('updatesBidding', async () => {
-            bidTime = await eshop.updateBiddingEnd('1', '50')
+            bidTime = await eshop.setUpdateBiddingEnd('1', '50')
         })
 
         it('lists products', async () => {

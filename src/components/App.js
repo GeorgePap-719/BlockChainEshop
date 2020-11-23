@@ -9,13 +9,7 @@ import Main from './Main';
 
 process.title = eShop;
 
-//process.title = BlindAuction;
-
 class App extends Component {
-
-    // componentWillMount() {
-    //     this._componentWillMount();
-    // }
 
     // noinspection JSCheckFunctionSignatures
     async componentWillMount() {
@@ -71,8 +65,8 @@ class App extends Component {
                 this.setState({
                     internalProducts: [...this.state.internalProducts, productWithBids]
                 })
-            }
 
+            }
             console.log(productCount.toString())
             this.setState({loading: false})
         } else {
@@ -80,7 +74,8 @@ class App extends Component {
         }
     }
 
-    // updateBiddingEnd = (id, biddingTime) => {
+
+    // setUpdateBiddingEnd = (id, biddingTime) => {
     //     this.setState({loading: true})
     //     this.state.eshop.methods.updateBiddingEnd(id, biddingTime)
     //         .send({ from: this.state.account }).on('transactionHash', (hash) => {
@@ -95,15 +90,26 @@ class App extends Component {
             account: '',
             productCount: 0,
             internalProducts: [],
-            //updateBiddingEnd: {},
             loading: true
         }
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
-        this.newAuction = this.newAuction.bind(this)
         this.bidProduct = this.bidProduct.bind(this)
-        this.updateBiddingEnd = this.updateBiddingEnd(this)
+        this.setUpdateBiddingEnd = this.setUpdateBiddingEnd(this)
         this.getTimeBiddingEnd = this.getTimeBiddingEnd(this)
+        this.checkBidding = this.checkBidding(this)
+    }
+
+    //Function for calling the corresponding function inside the smart contract
+    checkBidding(id) {
+        // this.setState({loading: true})
+        //         // this.state.eshop.methods.checkBidding(id)
+        //         //     .send({from: this.state.account})
+        //         //     .once('receipt', (receipt) => {
+        //         //         //window.location.reload()
+        //         //     })
+        //         // this.setState({loading: false})
+        //
     }
 
 
@@ -113,9 +119,9 @@ class App extends Component {
         this.state.eshop.methods.createProduct(name, price)
             .send({from: this.state.account})
             .once('receipt', (receipt) => {
-
+                //window.location.reload()
             })
-        // window.location.reload()
+
         this.setState({loading: false})
         //
     }
@@ -124,37 +130,35 @@ class App extends Component {
     purchaseProduct(id, price) {
         this.setState({loading: true})
         this.state.eshop.methods.purchaseProduct(id)
-            .send({from: this.state.account, value: price}).once
-        ('receipt', (receipt) => {
+            .send({from: this.state.account, value: price})
+            .once('receipt', (receipt) => {
 
-        })
-        //window.location.reload()
+            })
+
         this.setState({loading: false})
         //  window.location.reload(false);
     }
 
     //Function for calling the corresponding function inside the smart contract
-    bidProduct(price) {
-        // this.setState({loading: true})
-        // this.state.blindAuction.methods.bid(price)
-        //     .send({from: this.state.account, value: price})
-        //     .once('receipt', (receipt) => {
+    bidProduct(price,id) {
+        this.setState({loading: true})
+
+        this.state.eshop.methods.bid(price)
+            .send({from: this.state.account, value: price})
+            .once('receipt', (receipt) => {
+
+            })
+
+        this.state.eshop.methods.checkBidding(id)
+            .send({from: this.state.account})
+            .once('receipt', (receipt) => {
+                //window.location.reload()
+            })
+
+        this.setState({loading: false})
         //
-        //     })
-        // this.setState({loading: false})
-        // //
     }
 
-    newAuction(biddingEnd, revealEnd) {
-        // this.setState({loading: true});
-        // this.state.blindAuction.methods.newAuction(biddingEnd, revealEnd)
-        //     .send({from: this.state.account})
-        //     .once('receipt', (receipt) => {
-        //
-        //     });
-        // this.setState({loading: false})
-        //
-    }
 
     /// Reveal your blinded bids. You will get a refund for all
     /// correctly blinded invalid bids and for all bids except for
@@ -177,7 +181,7 @@ class App extends Component {
     * Error info:
     * It doesnt recognise the eshop var for some reason.
     */
-    updateBiddingEnd(id, biddingTime) {
+    setUpdateBiddingEnd(id, biddingTime) {
         // this.setState({loading: true})
         // this.state.eshop.methods.updateBiddingEnd(id, biddingTime)
         //     .send({from: this.state.account })
@@ -185,7 +189,7 @@ class App extends Component {
         //
         //     })
         // this.setState({ loading: false })
-        //TODO fix the error
+        // // //TODO fix the error
     }
 
     render() {
@@ -202,9 +206,12 @@ class App extends Component {
                                     internalProducts={this.state.internalProducts}
                                     createProduct={this.createProduct}
                                     purchaseProduct={this.purchaseProduct}
-                                    updateBiddingEnd={this.updateBiddingEnd}
+                                    setUpdateBiddingEnd={this.setUpdateBiddingEnd}
                                     bidProduct={this.bidProduct}
-                                    newAuction={this.newAuction}
+                                    checkBidding={this.checkBidding}
+                                    //newAuction={this.newAuction}
+                                    // biddingEndArray={this.state.biddingEndArray}
+                                    // revealEndArray={this.state.revealEndArray}
                                 />
                             }
                         </main>
