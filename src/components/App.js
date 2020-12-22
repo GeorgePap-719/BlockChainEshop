@@ -14,6 +14,7 @@ process.title = eShop;
 
 class App extends Component {
 
+    //
     currentValues = [[], [],];
     currentFake = [[], [],];
     currentSecret = [[], [],];
