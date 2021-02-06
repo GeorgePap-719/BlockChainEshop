@@ -137,6 +137,7 @@ contract eShop {
 
     event AuctionEnded(address winner, uint highestBid);
     event NewAuctionBegins();
+    event Revealed(address refunded);
 
     // Ensure that `msg.value` is an even number.
     // Division will truncate if it is an odd number.
@@ -149,19 +150,19 @@ contract eShop {
         require((2 * value) == msg.value, "Value has to be even.");
     }
 
-    //BlindAuction Contract
-    function newAuction(
-        uint _biddingTime,
-        uint _revealTime
-    //        address payable _beneficiary
-    )
-    public
-    {
-        emit NewAuctionBegins();
-        //        beneficiary = _beneficiary;
-        biddingEnd = block.timestamp + _biddingTime;
-        revealEnd = biddingEnd + _revealTime;
-    }
+    //BlindAuction Contract Not Useed
+//    function newAuction(
+//        uint _biddingTime,
+//        uint _revealTime
+//    //        address payable _beneficiary
+//    )
+//    public
+//    {
+//        emit NewAuctionBegins();
+//        //        beneficiary = _beneficiary;
+//        biddingEnd = block.timestamp + _biddingTime;
+//        revealEnd = biddingEnd + _revealTime;
+//    }
 
     function checkBidding(uint _id) public {
 
@@ -169,11 +170,11 @@ contract eShop {
 
         //onlyBefore
         if (block.timestamp < biddingEnd) {
-            newProduct.biddingTime = false;
-        } else {
             newProduct.biddingTime = true;
+        } else {
+            newProduct.biddingTime = false;
 
-            if (block.timestamp > biddingEnd && block.timestamp < revealEnd) {
+            if (block.timestamp < revealEnd) {
                 newProduct.revealTime = true;
             }
 
@@ -191,7 +192,7 @@ contract eShop {
 
         ProductWithBids storage newProduct = product;
 
-        newProduct.biddingTime = false;
+        newProduct.biddingTime = true;
         newProduct.revealTime = false;
         newProduct.ended = false;
 //        bidsCount = 0;
@@ -229,8 +230,8 @@ contract eShop {
         bytes32[] memory _secret
     )
     public
-    onlyAfter(biddingEnd)
-    onlyBefore(revealEnd)
+    //onlyAfter(biddingEnd) TODO Uncomment it
+    //onlyBefore(revealEnd) TODO Uncomment it
     {
         uint length = bids[msg.sender].length;
         require(_values.length == length);
@@ -257,6 +258,8 @@ contract eShop {
             bidToCheck.blindedBid = bytes32(0);
         }
         msg.sender.transfer(refund);
+        //emit event
+        emit Revealed(msg.sender);
     }
 
     /// Withdraw a bid that was overbid.
@@ -444,12 +447,12 @@ contract eShop {
         // newProduct.biddingEnd =  60;//block.timestamp + 60
         // newProduct.revealEnd = newProduct.biddingEnd + 60;
 
-        //        //TODO modify it so it can support multiple auctions at the same time.
+        ////TODO modify it so it can support multiple auctions at the same time.
         // biddingEndArray[newProduct.id] = block.timestamp + 60;
         //revealEndArray[newProduct.id] = biddingEndArray[newProduct.id] + 60;
 
-        biddingEnd = block.timestamp + 60;
-        revealEnd = biddingEnd;
+        biddingEnd = block.timestamp + 30;
+        revealEnd = biddingEnd + 60;
 
         setAuctionVars(newProduct);
     }

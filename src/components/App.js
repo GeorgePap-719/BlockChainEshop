@@ -15,9 +15,17 @@ process.title = eShop;
 class App extends Component {
 
     //
-    currentValues = [[], [],];
-    currentFake = [[], [],];
-    currentSecret = [[], [],];
+    // currentValues = [[], [],];
+    // currentFake = [[], [],];
+    // currentSecret = [[], [],];
+    currentValues = 0;
+    currentFake = true;
+    currentSecret = "eShop";
+
+    // blindBidArray = {
+    //     account :
+    //
+    // }
 
     // noinspection JSCheckFunctionSignatures
     async componentWillMount() {
@@ -75,6 +83,7 @@ class App extends Component {
                 })
 
             }
+
             console.log(productCount.toString())
 
             // const bidsCount = await eshop.methods.bidsCount().call()
@@ -98,7 +107,6 @@ class App extends Component {
         }
     }
 
-
     // setUpdateBiddingEnd = (id, biddingTime) => {
     //     this.setState({loading: true})
     //     this.state.eshop.methods.updateBiddingEnd(id, biddingTime)
@@ -108,9 +116,21 @@ class App extends Component {
     //
     // }
 
+    /*
+     * ValuesArray = 0/currentValues.
+     *  = 1/currentFake
+     *  = 2/currentSecret
+     *
+     */
+
     constructor(props) {
         super(props)
         this.state = {
+            blindBidArray: [{
+                    price : [],
+                    fake : [],
+                    secret : []
+            }],
             account: '',
             productCount: 0,
             internalProducts: [],
@@ -118,13 +138,14 @@ class App extends Component {
             bids: [],
             loading: true
         }
+
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
         this.bidProduct = this.bidProduct.bind(this)
-        this.setUpdateBiddingEnd = this.setUpdateBiddingEnd(this)
-        this.getTimeBiddingEnd = this.getTimeBiddingEnd(this)
-        this.checkBidding = this.checkBidding(this)
-        this.reveal = this.reveal(this)
+        this.setUpdateBiddingEnd = this.setUpdateBiddingEnd.bind(this)//
+        this.getTimeBiddingEnd = this.getTimeBiddingEnd.bind(this)//
+        this.checkBidding = this.checkBidding.bind(this)//
+        this.reveal = this.reveal.bind(this)
     }
 
     //Function for calling the corresponding function inside the smart contract
@@ -168,8 +189,9 @@ class App extends Component {
 
     //Function for calling the corresponding function inside the smart contract
     bidProduct(price, fake, id) {
+
         this.setState({loading: true})
-        let secret = "eShop";
+        const secret = "eShop";
 
         const blindedBid = keccak256(abi.encodePacked(
             price,
@@ -178,13 +200,34 @@ class App extends Component {
         ))
 
 
-        //TODO impl support for multiple users.
-        this.currentValues.push(this.props.account, price);
-        this.currentFake.push(this.props.account, fake);
-        this.currentSecret.push(this.props.account, secret)
+        // //TODO impl support for multiple users.
+
+        // let blindBid = {
+        //     bid : {
+        //         price : price,
+        //         fake : fake,
+        //         secret : secret,
+        //         account : this.state.account
+        //     }
+        // }
+        let tempBid = this.state.bidsCount;
+
+        let blindBid = this.state.blindBidArray.slice();
+
+
+        //blindBid.price.push(price);
+        blindBid[tempBid].price = price;
+        blindBid[tempBid].fake = fake;
+        blindBid[tempBid].secret = secret;
+        // blindBid.fake.push(fake);
+        // blindBid.secret.push(secret);
+        tempBid++;
+
+        //this.setState({bidsCount: tempBid})
+        this.addBlindBid(blindBid, tempBid)
+
 
         // this.currentBids.push(this.props.account, blindedBid)
-
         this.state.eshop.methods.checkBidding(id)
             .send({from: this.state.account})
             .once('receipt', (receipt) => {
@@ -201,6 +244,23 @@ class App extends Component {
         //
     }
 
+    addBlindBid = (blindBid, tempBid) => {
+
+        // this.setState(function(blindBid, tempBid) {
+        //     return {
+        //         blindBidArray: blindBid,
+        //         bidsCount : tempBid
+        //     };
+        // });
+
+         // this.setState(blindBid, tempBid)
+
+        this.setState({
+            blindBidArray: blindBid,
+            bidsCount : tempBid
+        })
+    }
+
 
     /// Reveal your blinded bids. You will get a refund for all
     /// correctly blinded invalid bids and for all bids except for
@@ -213,15 +273,21 @@ class App extends Component {
         //TODO
         this.setState({loading: true})
 
-        this.state.eshop.methods.reveal(
-            this.currentValues,
-            this.currentFake,
-            this.currentSecret
-        )
-            .send({from: this.state.account})
-            .once('receipt', (receipt) => {
-                //window.location.reload()
-            })
+        let blindBid = this.state.blindBidArray.slice();
+
+        if (this.state.eshop.methods) {
+
+            //TODO this throws undefined map
+            this.state.eshop.methods.reveal(
+                blindBid.price,
+                blindBid.fake,
+                blindBid.secret
+            )
+                .send({from: this.state.account})
+                .once('receipt', (receipt) => {
+                    //window.location.reload()
+                })
+        }
 
         this.setState({loading: false})
     }
@@ -270,6 +336,7 @@ class App extends Component {
                                     bidProduct={this.bidProduct}
                                     checkBidding={this.checkBidding}
                                     reveal={this.reveal}
+                                    valuesArray={this.state.valuesArray}
                                     //newAuction={this.newAuction}
                                     // biddingEndArray={this.state.biddingEndArray}
                                     // revealEndArray={this.state.revealEndArray}

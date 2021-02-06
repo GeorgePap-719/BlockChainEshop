@@ -201,7 +201,7 @@ class Main extends Component {
                                             placeholder="Fake"
                                             required/>
                                     </div>
-                                    {!product.biddingTime && product.purchased
+                                    {product.biddingTime && product.purchased
                                         ? <button
 
                                             onClick={(event) => {
@@ -223,13 +223,11 @@ class Main extends Component {
                                 </td>
                                 <td id="reveal">{}</td>
                                 <td>
-                                    {(product.biddingTime && !product.revealTime)
+                                    {(!product.biddingTime && product.revealTime && product.purchased)
                                         ? <button
                                             onClick={(event) => {
-                                                //const byte32Bid = window.web3.utils.fromAscii(this.bid)
-                                                //this.props.bidProduct(byte32Bid)
-                                                //TODO impl blind auction house
                                                 //TODO change this button to reveal
+                                                this.props.reveal()
                                             }}>
                                             Reveal
                                         </button>
