@@ -10,6 +10,7 @@ import * as abi from "web3-utils";
 import {keccak256} from "ethereumjs-util";
 
 
+
 process.title = eShop;
 
 class App extends Component {
@@ -22,9 +23,16 @@ class App extends Component {
     currentFake = true;
     currentSecret = "eShop";
 
-    // blindBidArray = {
-    //     account :
+    // componentDidMount() {
+    //     function fetchBidsCount() {
     //
+    //     }
+    //
+    //     fetchBidsCount().then(response => {
+    //         this.setState({
+    //             bidsCount: response.bidsCount
+    //         })
+    //     })
     // }
 
     // noinspection JSCheckFunctionSignatures
@@ -124,12 +132,12 @@ class App extends Component {
      */
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             blindBidArray: [{
-                    price : [],
-                    fake : [],
-                    secret : []
+                price: [],
+                fake: [],
+                secret: []
             }],
             account: '',
             productCount: 0,
@@ -193,41 +201,32 @@ class App extends Component {
         this.setState({loading: true})
         const secret = "eShop";
 
-        const blindedBid = keccak256(abi.encodePacked(
-            price,
+        const blindedBid = keccak256(new Buffer(abi.encodePacked(
+            parseInt(price),
             fake,
             secret
-        ))
+        )))
 
+        //TODO impl support for multiple users.
 
-        // //TODO impl support for multiple users.
-
-        // let blindBid = {
-        //     bid : {
-        //         price : price,
-        //         fake : fake,
-        //         secret : secret,
-        //         account : this.state.account
-        //     }
-        // }
         let tempBid = this.state.bidsCount;
+        //tempBid[this.state.account]++;
 
-        let blindBid = this.state.blindBidArray.slice();
+        let blindBid = this.state.blindBidArray;
 
-
-        //blindBid.price.push(price);
         blindBid[tempBid].price = price;
         blindBid[tempBid].fake = fake;
         blindBid[tempBid].secret = secret;
-        // blindBid.fake.push(fake);
-        // blindBid.secret.push(secret);
+
         tempBid++;
 
+        // blindBid.price.push(price)
+        // blindBid.fake.push(fake)
+        // blindBid.secret.push(secret)
+
         //this.setState({bidsCount: tempBid})
-        this.addBlindBid(blindBid, tempBid)
+        //this.addBlindBid(blindBid, tempBid)
 
-
-        // this.currentBids.push(this.props.account, blindedBid)
         this.state.eshop.methods.checkBidding(id)
             .send({from: this.state.account})
             .once('receipt', (receipt) => {
@@ -240,8 +239,21 @@ class App extends Component {
 
             })
 
-        this.setState({loading: false})
-        //
+        //?
+        this.setState(function (state, props) {
+            return {
+                loading: false,
+                blindBidArray: blindBid,
+                bidsCount: state.bidsCount + props.bidsCount
+            };
+        });
+
+        // this.setState({
+        //     loading: false,
+        //     blindBidArray: blindBid,
+        //     bidsCount: tempBid
+        // })
+
     }
 
     addBlindBid = (blindBid, tempBid) => {
@@ -253,11 +265,11 @@ class App extends Component {
         //     };
         // });
 
-         // this.setState(blindBid, tempBid)
+        // this.setState(blindBid, tempBid)
 
         this.setState({
             blindBidArray: blindBid,
-            bidsCount : tempBid
+            bidsCount: tempBid
         })
     }
 
@@ -270,24 +282,36 @@ class App extends Component {
         // _fake,
         // _secret
     ) {
-        //TODO
+        //TODO reveal-btn impl
         this.setState({loading: true})
 
-        let blindBid = this.state.blindBidArray.slice();
+        let blindBid = this.state.blindBidArray;
+        let bidCount = this.props.bidsCount;
 
-        if (this.state.eshop.methods) {
+        console.log("BidsCount: " + bidCount);
+        // if (this.state.eshop.methods) {
 
-            //TODO this throws undefined map
-            this.state.eshop.methods.reveal(
-                blindBid.price,
-                blindBid.fake,
-                blindBid.secret
-            )
-                .send({from: this.state.account})
-                .once('receipt', (receipt) => {
-                    //window.location.reload()
-                })
+        let i;
+        let _price = 0, _fake = 0, _secret = 0
+        for (i = 0; i < bidCount; i++) {
+            _price[i] = blindBid[i].price
+            _fake[i] = blindBid[i].fake
+            _secret[i] = blindBid[i].secret
+            console.log("I: " + i);
         }
+
+
+        //TODO this throws undefined map
+        this.state.eshop.methods.reveal(
+            _price,
+            _fake,
+            _secret
+        )
+            .send({from: this.state.account})
+            .once('receipt', (receipt) => {
+                //window.location.reload()
+            })
+        // }
 
         this.setState({loading: false})
     }
