@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Do What The F*ck You Want To Public License
 
-
 pragma solidity 0.7.4;
 
 contract Migrations {

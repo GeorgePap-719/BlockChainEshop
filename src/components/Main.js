@@ -206,11 +206,11 @@ class Main extends Component {
 
                                             onClick={(event) => {
 
-                                                const byte32Bid = window.web3.utils.fromAscii(this.productPriceBid).toString();
+                                                const byte32Bid = window.web3.utils.fromAscii(this.productPriceBid.value);
                                                 this.props.bidProduct(
                                                     byte32Bid,
                                                     this.productFake.toString(),
-                                                    product.id.toString()
+                                                    product.id
                                                 )
                                                 //bids.push(this.props.account)
                                                 //TODO impl blind auction house
@@ -226,7 +226,7 @@ class Main extends Component {
                                     {(!product.biddingTime && product.revealTime && product.purchased)
                                         ? <button
                                             onClick={(event) => {
-                                                //TODO change this button to reveal
+                                                //event.preventDefault()
                                                 this.props.reveal()
                                             }}>
                                             Reveal

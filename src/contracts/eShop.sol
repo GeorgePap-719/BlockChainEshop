@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GL2PS License
-
 pragma solidity 0.7.4;
 
 //import "./BlindAuction.sol";
