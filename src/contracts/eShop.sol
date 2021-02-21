@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GL2PS License
 pragma solidity 0.7.4;
 
-//import "./BlindAuction.sol";
-
 contract eShop {
     string public name;
     uint public productCount = 0;
@@ -20,7 +18,7 @@ contract eShop {
     uint public biddingEnd;
     uint public revealEnd;
     bool public ended;
-//    uint public bidsCount = 0;
+    //    uint public bidsCount = 0;
 
     //uint[] public biddingEndArray = new unit[100];
     //uint[] public revealEndArray = new unit[100];
@@ -30,6 +28,8 @@ contract eShop {
     mapping(uint => ProductWithBids) public internalProducts;
 
     mapping(address => Bid[]) public bids;
+    mapping(address => SecretBids[]) public nakedBids;
+    uint public globalBidsCount = 0;
 
     address public highestBidder;
     uint public highestBid;
@@ -85,6 +85,12 @@ contract eShop {
         uint deposit;
     }
 
+    struct SecretBids {
+        uint values;
+        bool fake;
+        string secret;
+    }
+
     struct Product {
         uint id;
         string name;
@@ -105,6 +111,7 @@ contract eShop {
         bool purchased;
         State state;
         mapping(address => Bid[]) bids;
+        uint bidsCount;
         bool ended;
         bool biddingTime;
         bool revealTime;
@@ -150,26 +157,41 @@ contract eShop {
     }
 
     //BlindAuction Contract Not Useed
-//    function newAuction(
-//        uint _biddingTime,
-//        uint _revealTime
-//    //        address payable _beneficiary
-//    )
-//    public
-//    {
-//        emit NewAuctionBegins();
-//        //        beneficiary = _beneficiary;
-//        biddingEnd = block.timestamp + _biddingTime;
-//        revealEnd = biddingEnd + _revealTime;
-//    }
+    //    function newAuction(
+    //        uint _biddingTime,
+    //        uint _revealTime
+    //    //        address payable _beneficiary
+    //    )
+    //    public
+    //    {
+    //        emit NewAuctionBegins();
+    //        //        beneficiary = _beneficiary;
+    //        biddingEnd = block.timestamp + _biddingTime;
+    //        revealEnd = biddingEnd + _revealTime;
+    //    }
 
-    function checkBidding(uint _id) public {
+    function checkBidding(
+        uint _id,
+        bytes32 _blindedBid,
+        uint _values,
+        bool _fake,
+        string memory _secret
+    )
+    public
+    payable {
 
         ProductWithBids storage newProduct = internalProducts[_id];
 
         //onlyBefore
         if (block.timestamp < biddingEnd) {
             newProduct.biddingTime = true;
+            bid(_blindedBid);
+            pushNakedBids(
+                _values,
+                _fake,
+                _secret
+            );
+            newProduct.bidsCount++;
         } else {
             newProduct.biddingTime = false;
 
@@ -194,7 +216,8 @@ contract eShop {
         newProduct.biddingTime = true;
         newProduct.revealTime = false;
         newProduct.ended = false;
-//        bidsCount = 0;
+        newProduct.bidsCount = 0;
+        //        bidsCount = 0;
     }
 
     /// Place a blinded bid with `_blindedBid` =
@@ -209,14 +232,30 @@ contract eShop {
     function bid(bytes32 _blindedBid)
     public
     payable
-    onlyBefore(biddingEnd)
+        //onlyBefore(biddingEnd)
     {
         bids[msg.sender].push(Bid({
-            blindedBid : _blindedBid,
-            deposit : msg.value
-            }));
+        blindedBid : _blindedBid,
+        deposit : msg.value
+        }));
 
-//        bidsCount++;
+        globalBidsCount++;
+        //        bidsCount++;
+    }
+
+    function pushNakedBids(
+        uint _values,
+        bool _fake,
+        string memory _secret
+    )
+    public
+    payable
+    {
+        nakedBids[msg.sender].push(SecretBids({
+        values : _values,
+        fake : _fake,
+        secret : _secret
+        }));
     }
 
     ///secret is just the required string for the matching encoding
@@ -229,8 +268,8 @@ contract eShop {
         bytes32[] memory _secret
     )
     public
-    //onlyAfter(biddingEnd) TODO Uncomment it
-    //onlyBefore(revealEnd) TODO Uncomment it
+        //onlyAfter(biddingEnd) TODO Uncomment it
+        //onlyBefore(revealEnd) TODO Uncomment it
     {
         uint length = bids[msg.sender].length;
         require(_values.length == length);

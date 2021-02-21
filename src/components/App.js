@@ -8,7 +8,7 @@ import Navbar from './Navbar';
 import Main from './Main';
 import * as abi from "web3-utils";
 import {keccak256} from "ethereumjs-util";
-
+import {ethers} from "ethers";
 
 
 process.title = eShop;
@@ -77,22 +77,27 @@ class App extends Component {
             this.setState({eshop})
 
             //Loading arrays from the blockChain
+            const globalBidsCount = await eshop.methods.globalBidsCount().call()
+            this.setState({globalBidsCount})
             const productCount = await eshop.methods.productCount().call()
             this.setState({productCount})
             //Load products checkValidServiceWorker
             for (var i = 1; i <= productCount; i++) {
-                // const product = await eshop.methods.products(i).call()
-                // this.setState({
-                //     products: [...this.state.products, product]
-                // })
                 const productWithBids = await eshop.methods.internalProducts(i).call()
                 this.setState({
                     internalProducts: [...this.state.internalProducts, productWithBids]
                 })
-
             }
+            console.log("productsCount: ", productCount.toString())
+            console.log("globalBids: ", globalBidsCount.toString())
 
-            console.log(productCount.toString())
+            for (var j = 0; j < globalBidsCount; j++) {
+
+                const nakedBids = await eshop.methods.nakedBids(this.state.account, j).call()
+                this.setState({
+                    nakedBids: [...this.state.nakedBids, nakedBids]
+                })
+            }
 
             // const bidsCount = await eshop.methods.bidsCount().call()
             // this.setState({bidsCount})
@@ -133,6 +138,7 @@ class App extends Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
             blindBidArray: [{
                 price: [],
@@ -143,9 +149,11 @@ class App extends Component {
             productCount: 0,
             internalProducts: [],
             bidsCount: 0,
-            bids: [],
+            nakedBids: [],
+            globalBidsCount: 0,
             loading: true
         }
+
 
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
@@ -155,6 +163,15 @@ class App extends Component {
         this.checkBidding = this.checkBidding.bind(this)//
         this.reveal = this.reveal.bind(this)
     }
+
+    // componentDidMount() {
+    //     this.bidProduct().then(response => {
+    //         this.setState({
+    //             blindBidArray: response.blindBidArray,
+    //             bidsCount: response.bidsCount
+    //         });
+    //     });
+    // }
 
     //Function for calling the corresponding function inside the smart contract
     checkBidding(id) {
@@ -196,7 +213,7 @@ class App extends Component {
     }
 
     //Function for calling the corresponding function inside the smart contract
-    bidProduct(price, fake, id) {
+    bidProduct(price, fake, id, bidsCount) {
 
         this.setState({loading: true})
         const secret = "eShop";
@@ -208,112 +225,101 @@ class App extends Component {
         )))
 
         //TODO impl support for multiple users.
+        //tempBid + this.state.account
+        //Another idea is to make BidsCount 2d and store this.state.account
 
-        let tempBid = this.state.bidsCount;
-        //tempBid[this.state.account]++;
+        const _price = window.web3.utils.fromWei(price.toString(), 'ether');
 
-        let blindBid = this.state.blindBidArray;
+        console.log(parseInt(_price) + ": price");
+        console.log("tempBid First Look : ", bidsCount);
 
-        blindBid[tempBid].price = price;
-        blindBid[tempBid].fake = fake;
-        blindBid[tempBid].secret = secret;
-
-        tempBid++;
-
-        // blindBid.price.push(price)
-        // blindBid.fake.push(fake)
-        // blindBid.secret.push(secret)
-
-        //this.setState({bidsCount: tempBid})
-        //this.addBlindBid(blindBid, tempBid)
-
-        this.state.eshop.methods.checkBidding(id)
-            .send({from: this.state.account})
+        //TODO temporary disabled them to make the bidsCount work as intended
+        this.state.eshop.methods.checkBidding(
+            id,
+            blindedBid,
+            _price,
+            fake,
+            secret
+        )
+            .send({from: this.state.account, value: price})
             .once('receipt', (receipt) => {
                 //window.location.reload()
             })
 
-        this.state.eshop.methods.bid(blindedBid)
-            .send({from: this.state.account, value: price})
-            .once('receipt', (receipt) => {
 
+        this.setState((state) => {
+                return {
+                    loading: false,
+                }
+            },
+            () => {
+                console.log("New bid: ",
+                    parseInt(price),
+                    fake,
+                    secret)
             })
 
-        //?
-        this.setState(function (state, props) {
-            return {
-                loading: false,
-                blindBidArray: blindBid,
-                bidsCount: state.bidsCount + props.bidsCount
-            };
-        });
-
-        // this.setState({
-        //     loading: false,
-        //     blindBidArray: blindBid,
-        //     bidsCount: tempBid
-        // })
-
     }
-
-    addBlindBid = (blindBid, tempBid) => {
-
-        // this.setState(function(blindBid, tempBid) {
-        //     return {
-        //         blindBidArray: blindBid,
-        //         bidsCount : tempBid
-        //     };
-        // });
-
-        // this.setState(blindBid, tempBid)
-
-        this.setState({
-            blindBidArray: blindBid,
-            bidsCount: tempBid
-        })
-    }
-
 
     /// Reveal your blinded bids. You will get a refund for all
     /// correctly blinded invalid bids and for all bids except for
     /// the totally highest.
-    reveal(
-        // _values,
-        // _fake,
-        // _secret
-    ) {
-        //TODO reveal-btn impl
+    reveal() {
+
         this.setState({loading: true})
 
-        let blindBid = this.state.blindBidArray;
-        let bidCount = this.props.bidsCount;
+        let _price = [];
+        let _fake = [];
+        let _secret = [];
 
-        console.log("BidsCount: " + bidCount);
-        // if (this.state.eshop.methods) {
+        let bids = this.state.nakedBids
 
-        let i;
-        let _price = 0, _fake = 0, _secret = 0
-        for (i = 0; i < bidCount; i++) {
-            _price[i] = blindBid[i].price
-            _fake[i] = blindBid[i].fake
-            _secret[i] = blindBid[i].secret
-            console.log("I: " + i);
-        }
+        console.log("bids: ", bids);
 
+        this.state.nakedBids.forEach(bids => {
+                _price.push(bids.values)
+                _fake.push(bids.fake)
+                const secret32Byte = this.web3StringToBytes32(bids.secret)
+                _secret.push(secret32Byte)
+            }
+        )
 
-        //TODO this throws undefined map
+        console.log("_price: ", _price)
+        console.log("_fake: ", _fake)
+        console.log("_secret: ", _secret)
+
+        // TODO this throws undefined map
         this.state.eshop.methods.reveal(
-            _price,
             _fake,
             _secret
         )
             .send({from: this.state.account})
             .once('receipt', (receipt) => {
-                //window.location.reload()
-            })
-        // }
+                    //window.location.reload()
+                },
+                () => {
+                    console.log("bids.values: ", bids.values)
+                    console.log("bids.fake: ", bids.fake)
+                    console.log("bids.secret: ", bids.secret)
+                })
 
         this.setState({loading: false})
+    }
+
+    /*
+     * https://github.com/ethers-io/ethers.js/issues/66
+     * To mimic the web3 coercion of short string into bytes32
+     * for legacy byte32[] arguments.
+     */
+    web3StringToBytes32(text) {
+        var result = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(text));
+        while (result.length < 66) {
+            result += '0';
+        }
+        if (result.length !== 66) {
+            throw new Error("invalid web3 implicit bytes32");
+        }
+        return result;
     }
 
 

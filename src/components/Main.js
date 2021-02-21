@@ -114,7 +114,7 @@ class Main extends Component {
                         <th scope="col">Name</th>
                         <th scope="col">Price</th>
                         <th scope="col">Owner</th>
-                        <th scope="col"></th>
+                        <th scope="col"/>
 
                     </tr>
                     </thead>
@@ -160,7 +160,7 @@ class Main extends Component {
                         <th scope="col">Price</th>
                         <th scope="col">Owner</th>
                         <th scope="col">BiddingTime</th>
-                        <th scope="col"></th>
+                        <th scope="col"/>
                         <th scope="col">RevealTime</th>
                         <th scope="col">Bids</th>
                     </tr>
@@ -201,16 +201,18 @@ class Main extends Component {
                                             placeholder="Fake"
                                             required/>
                                     </div>
-                                    {product.biddingTime && product.purchased
+                                    { product.purchased
+                                        //product.biddingTime && misses
                                         ? <button
 
                                             onClick={(event) => {
 
-                                                const byte32Bid = window.web3.utils.fromAscii(this.productPriceBid.value);
+                                                const byte32Bid = window.web3.utils.toWei(this.productPriceBid.value.toString());
                                                 this.props.bidProduct(
                                                     byte32Bid,
-                                                    this.productFake.toString(),
-                                                    product.id
+                                                    this.productFake.value.toString(),
+                                                    product.id,
+                                                    product.bidsCount
                                                 )
                                                 //bids.push(this.props.account)
                                                 //TODO impl blind auction house
@@ -227,12 +229,15 @@ class Main extends Component {
                                         ? <button
                                             onClick={(event) => {
                                                 //event.preventDefault()
-                                                this.props.reveal()
+                                                this.props.reveal(product.bidsCount)
                                             }}>
                                             Reveal
                                         </button>
                                         : null
                                     }
+                                </td>
+                                <td>
+                                    {product.bidsCount.toString()}
                                 </td>
 
                             </tr>
