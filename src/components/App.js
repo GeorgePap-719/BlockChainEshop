@@ -15,26 +15,6 @@ process.title = eShop;
 
 class App extends Component {
 
-    //
-    // currentValues = [[], [],];
-    // currentFake = [[], [],];
-    // currentSecret = [[], [],];
-    currentValues = 0;
-    currentFake = true;
-    currentSecret = "eShop";
-
-    // componentDidMount() {
-    //     function fetchBidsCount() {
-    //
-    //     }
-    //
-    //     fetchBidsCount().then(response => {
-    //         this.setState({
-    //             bidsCount: response.bidsCount
-    //         })
-    //     })
-    // }
-
     // noinspection JSCheckFunctionSignatures
     async componentWillMount() {
         await this.loadWeb3()
@@ -99,52 +79,16 @@ class App extends Component {
                 })
             }
 
-            // const bidsCount = await eshop.methods.bidsCount().call()
-            // this.setState({bidsCount})
-
-            // for (var i = 1; i <= bidsCount; i++) {
-            //
-            //     // TODO impl?.
-            //     // The problem is  i cant find the appropriate address with simple way and not
-            //     // scrolling all the abi every time .
-            //     // const productBids = await eshop.methods.bids('needRightAddress', i).call()
-            //     // this.setState({
-            //     //     bids: [...this.state.bids, productBids]
-            //     // })
-            // }
-
-
             this.setState({loading: false})
         } else {
             window.alert("eShop contract can not be deployed to detected network")
         }
     }
 
-    // setUpdateBiddingEnd = (id, biddingTime) => {
-    //     this.setState({loading: true})
-    //     this.state.eshop.methods.updateBiddingEnd(id, biddingTime)
-    //         .send({ from: this.state.account }).on('transactionHash', (hash) => {
-    //         this.setState({ loading: false })
-    //     })
-    //
-    // }
-
-    /*
-     * ValuesArray = 0/currentValues.
-     *  = 1/currentFake
-     *  = 2/currentSecret
-     *
-     */
 
     constructor(props) {
         super(props);
-
         this.state = {
-            blindBidArray: [{
-                price: [],
-                fake: [],
-                secret: []
-            }],
             account: '',
             productCount: 0,
             internalProducts: [],
@@ -153,8 +97,6 @@ class App extends Component {
             globalBidsCount: 0,
             loading: true
         }
-
-
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
         this.bidProduct = this.bidProduct.bind(this)
@@ -162,16 +104,9 @@ class App extends Component {
         this.getTimeBiddingEnd = this.getTimeBiddingEnd.bind(this)//
         this.checkBidding = this.checkBidding.bind(this)//
         this.reveal = this.reveal.bind(this)
+        this.withdraw = this.withdraw.bind(this)
+        this.auctionEnd = this.auctionEnd.bind(this)
     }
-
-    // componentDidMount() {
-    //     this.bidProduct().then(response => {
-    //         this.setState({
-    //             blindBidArray: response.blindBidArray,
-    //             bidsCount: response.bidsCount
-    //         });
-    //     });
-    // }
 
     //Function for calling the corresponding function inside the smart contract
     checkBidding(id) {
@@ -185,14 +120,16 @@ class App extends Component {
         //
     }
 
-
     //Function for calling the corresponding function inside the smart contract
     createProduct(name, price) {
         this.setState({loading: true})
+        console.log("emit createdProduct")
+
         this.state.eshop.methods.createProduct(name, price)
             .send({from: this.state.account})
             .once('receipt', (receipt) => {
                 //window.location.reload()
+                console.log("emit createdProduct")
             })
 
         this.setState({loading: false})
@@ -233,7 +170,6 @@ class App extends Component {
         console.log(parseInt(_price) + ": price");
         console.log("tempBid First Look : ", bidsCount);
 
-        //TODO temporary disabled them to make the bidsCount work as intended
         this.state.eshop.methods.checkBidding(
             id,
             blindedBid,
@@ -290,6 +226,7 @@ class App extends Component {
 
         // TODO this throws undefined map
         this.state.eshop.methods.reveal(
+            _price,
             _fake,
             _secret
         )
@@ -325,8 +262,31 @@ class App extends Component {
 
     //Withdraw a bid that was overbid.
     withdraw() {
-        //TODO
+        this.setState({loading: true})
+
+        if (this.state.eshop)
+        this.state.eshop.methods.withdraw()
+            .send({from: this.state.account})
+            .once('receipt', (receipt) => {
+
+            })
+
+        this.setState({loading: false})
     }
+
+    auctionEnd() {
+        this.setState({loading: true})
+
+        if (this.state.eshop)
+            this.state.eshop.methods.auctionEnd()
+                .send({from: this.state.account})
+                .once('receipt', (receipt) => {
+
+                })
+
+        this.setState({loading: false})
+    }
+
 
     getTimeBiddingEnd() {
         //TODO
@@ -364,12 +324,10 @@ class App extends Component {
                                     purchaseProduct={this.purchaseProduct}
                                     setUpdateBiddingEnd={this.setUpdateBiddingEnd}
                                     bidProduct={this.bidProduct}
-                                    checkBidding={this.checkBidding}
                                     reveal={this.reveal}
-                                    valuesArray={this.state.valuesArray}
-                                    //newAuction={this.newAuction}
-                                    // biddingEndArray={this.state.biddingEndArray}
-                                    // revealEndArray={this.state.revealEndArray}
+                                    withdraw={this.withdraw}
+                                    auctionEnd={this.auctionEnd}
+                                    checkBidding={this.checkBidding}
                                 />
                             }
                         </main>

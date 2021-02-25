@@ -68,7 +68,6 @@ function auctionHouse(biddingEnd, revealEnd, id) {
 }
 
 
-
 class Main extends Component {
 
     render() {
@@ -163,6 +162,8 @@ class Main extends Component {
                         <th scope="col"/>
                         <th scope="col">RevealTime</th>
                         <th scope="col">Bids</th>
+                        <th scope="col">WithDraw</th>
+
                     </tr>
 
                     </thead>
@@ -201,7 +202,7 @@ class Main extends Component {
                                             placeholder="Fake"
                                             required/>
                                     </div>
-                                    { product.purchased
+                                    {product.purchased
                                         //product.biddingTime && misses
                                         ? <button
 
@@ -214,8 +215,6 @@ class Main extends Component {
                                                     product.id,
                                                     product.bidsCount
                                                 )
-                                                //bids.push(this.props.account)
-                                                //TODO impl blind auction house
                                             }}>
                                             Bid
                                         </button>
@@ -228,7 +227,6 @@ class Main extends Component {
                                     {(!product.biddingTime && product.revealTime && product.purchased)
                                         ? <button
                                             onClick={(event) => {
-                                                //event.preventDefault()
                                                 this.props.reveal(product.bidsCount)
                                             }}>
                                             Reveal
@@ -238,6 +236,31 @@ class Main extends Component {
                                 </td>
                                 <td>
                                     {product.bidsCount.toString()}
+                                </td>
+                                <td id="withdraw">{}</td>
+                                <td>
+                                    {(!product.biddingTime && product.revealTime && product.purchased)
+                                        ? <button
+                                            onClick={(event) => {
+                                                this.props.withdraw();
+                                            }}>
+                                            withdraw
+                                        </button>
+                                        : null
+                                    }
+                                </td>
+                                <td>
+                                    {/*//TODO change the conditions*/}
+                                    {
+                                        (!product.biddingTime && product.revealTime && product.purchased)
+                                            ? <button
+                                                onClick={(event) => {
+                                                    this.props.auctionEnd();
+                                                }}>
+                                                EndAuction
+                                            </button>
+                                            : null
+                                    }
                                 </td>
 
                             </tr>

@@ -1,4 +1,4 @@
-const eShop = artifacts.require("eShop");
+const eShop = artifacts.require("eShop.sol");
 // const BlindAuction = artifacts.require("BlindAuction")
 
 // Here we clarify the order which the contracts will be deployed.

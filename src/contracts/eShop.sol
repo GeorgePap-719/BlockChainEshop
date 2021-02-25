@@ -141,6 +141,7 @@ contract eShop {
     event ItemReceived();
     event SellerRefunded();
 
+    event NotRevealedYet(address refunded);
     event AuctionEnded(address winner, uint highestBid);
     event NewAuctionBegins();
     event Revealed(address refunded);
@@ -152,23 +153,7 @@ contract eShop {
         name = "Dapp eShop";
         seller = msg.sender;
         beneficiary = msg.sender;
-        value = msg.value / 2;
-        require((2 * value) == msg.value, "Value has to be even.");
     }
-
-    //BlindAuction Contract Not Useed
-    //    function newAuction(
-    //        uint _biddingTime,
-    //        uint _revealTime
-    //    //        address payable _beneficiary
-    //    )
-    //    public
-    //    {
-    //        emit NewAuctionBegins();
-    //        //        beneficiary = _beneficiary;
-    //        biddingEnd = block.timestamp + _biddingTime;
-    //        revealEnd = biddingEnd + _revealTime;
-    //    }
 
     function checkBidding(
         uint _id,
@@ -268,6 +253,7 @@ contract eShop {
         bytes32[] memory _secret
     )
     public
+    payable
         //onlyAfter(biddingEnd) TODO Uncomment it
         //onlyBefore(revealEnd) TODO Uncomment it
     {
@@ -284,6 +270,7 @@ contract eShop {
             if (bidToCheck.blindedBid != keccak256(abi.encodePacked(value, fake, secret))) {
                 // Bid was not actually revealed.
                 // Do not refund deposit.
+                emit NotRevealedYet(msg.sender);
                 continue;
             }
             refund += bidToCheck.deposit;
@@ -302,7 +289,7 @@ contract eShop {
 
     /// Withdraw a bid that was overbid.
     //This cant be called by js?
-    function withdraw() public {
+    function withdraw() public payable {
         uint amount = pendingReturns[msg.sender];
         if (amount > 0) {
             // It is important to set this to zero because the recipient
@@ -317,12 +304,10 @@ contract eShop {
 
     /// End the auction and send the highest bid
     /// to the beneficiary.
-    // Maybe only the seller can call this?
-    // TODO
-    //Or let the js call this
     function auctionEnd()
     public
-    onlyAfter(revealEnd)
+    payable
+    //onlyAfter(revealEnd)
     {
         require(!ended);
         emit AuctionEnded(highestBidder, highestBid);
@@ -347,92 +332,8 @@ contract eShop {
         highestBidder = bidder;
         return true;
     }
-
     //End of BlindAuction
 
-    /// Abort the purchase and reclaim the ether.
-    /// Can only be called by the seller before
-    /// the contract is locked.
-    //    function abort()
-    //    public
-    //    onlySeller
-    //    inState(State.Created)
-    //    {
-    //        emit Aborted();
-    //        state = State.Inactive;
-    //        // We use transfer here directly. It is
-    //        // repentantly-safe, because it is the
-    //        // last call in this function and we
-    //        // already changed the state.
-    //        seller.transfer(address(this).balance);
-    //    }
-
-    //    //Internal function so we can set the auction for the new
-    //    //Item
-    //    //TODO unused argument
-    //    function newAuctionInit(address payable _beneficiary) internal {
-    //        //        uint _biddingTime = 60;
-    //        //        uint _revealTime = 15;
-    //        //        //Call the BlindAuction contract method TODO
-    //        //        // newAuction(_biddingTime, _revealTime, _beneficiary)
-    //        //        BlindAuction blindAuction = new BlindAuction();
-    //        //        blindAuction.newAuction(
-    //        //            _biddingTime,
-    //        //            _revealTime
-    //        //        //            _beneficiary
-    //        //        );
-    //
-    //    }
-
-    //    /// Confirm the purchase as buyer.
-    //    /// Transaction has to include `2 * value` ether.
-    //    /// The ether will be locked until confirmReceived
-    //    /// is called.
-    //    //Note: i will change this , to be able to be called
-    //    //by both parties , so the buyer can have some avtual
-    //    //time to change his time and abort the transaction
-    //    function confirmPurchase(uint _id)
-    //    public
-    //    inState(State.Created)
-    //    condition(msg.value == (2 * value))
-    //    payable
-    //    {
-    //        emit PurchaseConfirmed();
-    //        buyer = msg.sender;
-    //        state = State.Locked;
-    //    }
-
-    //    /// Confirm that you (the buyer) received the item.
-    //    /// This will release the locked ether.
-    //    function confirmReceived()
-    //    public
-    //    onlyBuyer
-    //    inState(State.Locked)
-    //    {
-    //        emit ItemReceived();
-    //        // It is important to change the state first because
-    //        // otherwise, the contracts called using `send` below
-    //        // can call in again here.
-    //        state = State.Release;
-    //
-    //        buyer.transfer(value);
-    //    }
-
-    //    /// This function refunds the seller, i.e.
-    //    /// pays back the locked funds of the seller.
-    //    function refundSeller()
-    //    public
-    //    onlySeller
-    //    inState(State.Release)
-    //    {
-    //        emit SellerRefunded();
-    //        // It is important to change the state first because
-    //        // otherwise, the contracts called using `send` below
-    //        // can call in again here.
-    //        state = State.Inactive;
-    //
-    //        seller.transfer(3 * value);
-    //    }
 
     function createProduct(string memory _name, uint _price) public {
         //Require a names
@@ -449,15 +350,12 @@ contract eShop {
         //            msg.sender,
         //            false,
         //            State.Created);
-
-
         /*
          * Note how in all the functions, a struct type is assigned to
          * a local variable with data location storage. This does not copy
          * the struct but only stores a reference so that assignments
          * to members of the local variable actually write to the state.
         */
-
         ProductWithBids storage newProduct = internalProducts[productCount];
         //create the product
         newProduct.id = productCount;
@@ -470,8 +368,6 @@ contract eShop {
 
         //trigger an event
         emit ProductCreated(productCount, _name, _price, msg.sender, false, State.Created);
-
-        //Seller must also pay 2*value of the product he lists. TODO
     }
 
     function beginAuction(ProductWithBids storage product) internal {
@@ -518,10 +414,8 @@ contract eShop {
         _seller.transfer(msg.value);
         //trigger an event
         emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
-
         //..beginAuction
         beginAuction(_product);
-
     }
 
     //Public setter
