@@ -6,9 +6,6 @@ import eShop from '../abis/eShop.json';
 //import BlindAuction from '../abis/BlindAuction.json';
 import Navbar from './Navbar';
 import Main from './Main';
-import * as abi from "web3-utils";
-import {keccak256} from "ethereumjs-util";
-import {ethers} from "ethers";
 
 
 process.title = eShop;
@@ -71,6 +68,18 @@ class App extends Component {
             console.log("productsCount: ", productCount.toString())
             console.log("globalBids: ", globalBidsCount.toString())
 
+            //Update live-Time
+            // let biddingEnd = await eshop.methods.biddingEnd().call() - Math.floor(Date.now() / 1000)
+            // let revealEnd = await eshop.methods.revealEnd().call() - Math.floor(Date.now() / 1000)
+            //
+            // if (biddingEnd < 0 || isNaN(biddingEnd))
+            //     biddingEnd = 0
+            // if (revealEnd < 0 || isNaN(revealEnd))
+            //     revealEnd = 0
+            //
+            // console.log("biddingEnd: ", biddingEnd.toString())
+            // console.log("revealEnd: ", revealEnd.toString())
+
             for (var j = 0; j < globalBidsCount; j++) {
 
                 const nakedBids = await eshop.methods.nakedBids(this.state.account, j).call()
@@ -100,8 +109,6 @@ class App extends Component {
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
         this.bidProduct = this.bidProduct.bind(this)
-        this.setUpdateBiddingEnd = this.setUpdateBiddingEnd.bind(this)//
-        this.getTimeBiddingEnd = this.getTimeBiddingEnd.bind(this)//
         this.checkBidding = this.checkBidding.bind(this)//
         this.reveal = this.reveal.bind(this)
         this.withdraw = this.withdraw.bind(this)
@@ -153,19 +160,20 @@ class App extends Component {
     bidProduct(price, fake, id, bidsCount) {
 
         this.setState({loading: true})
-        const secret = "eShop";
 
-        const blindedBid = keccak256(new Buffer(abi.encodePacked(
-            parseInt(price),
-            fake,
-            secret
-        )))
+        const secret = "eShop";
+        const _price = window.web3.utils.fromWei(price.toString(), 'ether');
+
+        const blindedBid = window.web3.utils.soliditySha3(
+            {t: 'uint', v: parseInt(_price)},
+            {t: 'bool', v: fake},
+            {t: 'string', v: secret}
+        );
+
 
         //TODO impl support for multiple users.
         //tempBid + this.state.account
         //Another idea is to make BidsCount 2d and store this.state.account
-
-        const _price = window.web3.utils.fromWei(price.toString(), 'ether');
 
         console.log(parseInt(_price) + ": price");
         console.log("tempBid First Look : ", bidsCount);
@@ -190,7 +198,7 @@ class App extends Component {
             },
             () => {
                 console.log("New bid: ",
-                    parseInt(price),
+                    parseInt(_price),
                     fake,
                     secret)
             })
@@ -214,9 +222,8 @@ class App extends Component {
 
         this.state.nakedBids.forEach(bids => {
                 _price.push(bids.values)
-                _fake.push(bids.fake)
-                const secret32Byte = this.web3StringToBytes32(bids.secret)
-                _secret.push(secret32Byte)
+            _fake.push(bids.fake)
+            _secret.push(bids.secret)
             }
         )
 
@@ -224,7 +231,6 @@ class App extends Component {
         console.log("_fake: ", _fake)
         console.log("_secret: ", _secret)
 
-        // TODO this throws undefined map
         this.state.eshop.methods.reveal(
             _price,
             _fake,
@@ -235,9 +241,9 @@ class App extends Component {
                     //window.location.reload()
                 },
                 () => {
-                    console.log("bids.values: ", bids.values)
-                    console.log("bids.fake: ", bids.fake)
-                    console.log("bids.secret: ", bids.secret)
+                    console.log("bids.values: ", _price)
+                    console.log("bids.fake: ", _fake)
+                    console.log("bids.secret: ", _secret)
                 })
 
         this.setState({loading: false})
@@ -248,16 +254,16 @@ class App extends Component {
      * To mimic the web3 coercion of short string into bytes32
      * for legacy byte32[] arguments.
      */
-    web3StringToBytes32(text) {
-        var result = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(text));
-        while (result.length < 66) {
-            result += '0';
-        }
-        if (result.length !== 66) {
-            throw new Error("invalid web3 implicit bytes32");
-        }
-        return result;
-    }
+    // web3StringToBytes32(text) {
+    //     var result = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(text));
+    //     while (result.length < 66) {
+    //         result += '0';
+    //     }
+    //     if (result.length !== 66) {
+    //         throw new Error("invalid web3 implicit bytes32");
+    //     }
+    //     return result;
+    // }
 
 
     //Withdraw a bid that was overbid.
@@ -265,20 +271,7 @@ class App extends Component {
         this.setState({loading: true})
 
         if (this.state.eshop)
-        this.state.eshop.methods.withdraw()
-            .send({from: this.state.account})
-            .once('receipt', (receipt) => {
-
-            })
-
-        this.setState({loading: false})
-    }
-
-    auctionEnd() {
-        this.setState({loading: true})
-
-        if (this.state.eshop)
-            this.state.eshop.methods.auctionEnd()
+            this.state.eshop.methods.withdraw()
                 .send({from: this.state.account})
                 .once('receipt', (receipt) => {
 
@@ -287,24 +280,17 @@ class App extends Component {
         this.setState({loading: false})
     }
 
+    auctionEnd(id) {
+        this.setState({loading: true})
 
-    getTimeBiddingEnd() {
-        //TODO
-    }
+        if (this.state.eshop)
+            this.state.eshop.methods.auctionEnd(id)
+                .send({from: this.state.account})
+                .once('receipt', (receipt) => {
 
-    /*
-    * Error info:
-    * It doesnt recognise the eshop var for some reason.
-    */
-    setUpdateBiddingEnd(id, biddingTime) {
-        // this.setState({loading: true})
-        // this.state.eshop.methods.updateBiddingEnd(id, biddingTime)
-        //     .send({from: this.state.account })
-        //     .once('receipt', (receipt) => {
-        //
-        //     })
-        // this.setState({ loading: false })
-        // // //TODO fix the error
+                })
+
+        this.setState({loading: false})
     }
 
     render() {
@@ -322,7 +308,6 @@ class App extends Component {
                                     bids={this.state.bids}
                                     createProduct={this.createProduct}
                                     purchaseProduct={this.purchaseProduct}
-                                    setUpdateBiddingEnd={this.setUpdateBiddingEnd}
                                     bidProduct={this.bidProduct}
                                     reveal={this.reveal}
                                     withdraw={this.withdraw}

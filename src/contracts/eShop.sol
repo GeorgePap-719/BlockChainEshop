@@ -1,30 +1,25 @@
 // SPDX-License-Identifier: GL2PS License
 pragma solidity 0.7.4;
+pragma experimental ABIEncoderV2;
+/*
+ * The above statement is mandatory
+ * as it enables support for two levels
+ * of dynamic arrays .
+ */
+
 
 contract eShop {
     string public name;
     uint public productCount = 0;
-    mapping(uint => Product) public products;
     uint value;//value == price
 
     //Safely Remote
     address payable public seller;
     address payable public buyer;
-    //Check if its preferable to transfer
-    //the safety mechanism in another contract TODO
 
     //BlindAuction
     address payable public beneficiary;//seller
-    uint public biddingEnd;
-    uint public revealEnd;
-    bool public ended;
-    //    uint public bidsCount = 0;
 
-    //uint[] public biddingEndArray = new unit[100];
-    //uint[] public revealEndArray = new unit[100];
-    //    mapping(uint => biddingEnd) public biddingTimes;
-    //    mapping(uint => revealEnd) public revealTimes;
-    // uint public productWithBidsCount = 0;
     mapping(uint => ProductWithBids) public internalProducts;
 
     mapping(address => Bid[]) public bids;
@@ -91,17 +86,6 @@ contract eShop {
         string secret;
     }
 
-    struct Product {
-        uint id;
-        string name;
-        uint price;
-        address payable owner;
-        bool purchased;
-        State state;
-        uint biddingTime;
-        uint revealTime;
-    }
-
     struct ProductWithBids {
         uint id;
         string name;
@@ -109,12 +93,15 @@ contract eShop {
         address payable owner;
         address payable beneficiary;
         bool purchased;
-        State state;
+        // State state;
         mapping(address => Bid[]) bids;
         uint bidsCount;
         bool ended;
-        bool biddingTime;
-        bool revealTime;
+        bool biddingTime;//TODO delete it
+        bool revealTime;//TODO delete it
+
+        uint biddingEnd;
+        uint revealEnd;
     }
 
 
@@ -164,12 +151,10 @@ contract eShop {
     )
     public
     payable {
-
         ProductWithBids storage newProduct = internalProducts[_id];
 
         //onlyBefore
-        if (block.timestamp < biddingEnd) {
-            newProduct.biddingTime = true;
+        if (block.timestamp < newProduct.biddingEnd) {
             bid(_blindedBid);
             pushNakedBids(
                 _values,
@@ -177,19 +162,10 @@ contract eShop {
                 _secret
             );
             newProduct.bidsCount++;
-        } else {
-            newProduct.biddingTime = false;
-
-            if (block.timestamp < revealEnd) {
-                newProduct.revealTime = true;
-            }
-
         }
-
-        if (block.timestamp > revealEnd) {
-            newProduct.ended = true;
-        } else {
-            newProduct.ended = false;
+        else {
+            newProduct.biddingTime = false;
+            newProduct.revealTime = true;
         }
 
     }
@@ -202,6 +178,8 @@ contract eShop {
         newProduct.revealTime = false;
         newProduct.ended = false;
         newProduct.bidsCount = 0;
+        newProduct.biddingEnd = block.timestamp + 30;
+        newProduct.revealEnd = newProduct.biddingEnd + 60;
         //        bidsCount = 0;
     }
 
@@ -250,7 +228,7 @@ contract eShop {
     function reveal(
         uint[] memory _values,
         bool[] memory _fake,
-        bytes32[] memory _secret
+        string[] memory _secret
     )
     public
     payable
@@ -265,7 +243,7 @@ contract eShop {
         uint refund;
         for (uint i = 0; i < length; i++) {
             Bid storage bidToCheck = bids[msg.sender][i];
-            (uint value, bool fake, bytes32 secret) =
+            (uint value, bool fake, string memory secret) =
             (_values[i], _fake[i], _secret[i]);
             if (bidToCheck.blindedBid != keccak256(abi.encodePacked(value, fake, secret))) {
                 // Bid was not actually revealed.
@@ -288,7 +266,7 @@ contract eShop {
     }
 
     /// Withdraw a bid that was overbid.
-    //This cant be called by js?
+    //This cant be called by js?3
     function withdraw() public payable {
         uint amount = pendingReturns[msg.sender];
         if (amount > 0) {
@@ -304,14 +282,16 @@ contract eShop {
 
     /// End the auction and send the highest bid
     /// to the beneficiary.
-    function auctionEnd()
+    function auctionEnd(uint _id)
     public
     payable
-    //onlyAfter(revealEnd)
+        //onlyAfter(revealEnd)
     {
-        require(!ended);
+        ProductWithBids storage currentProduct = internalProducts[_id];
+
+        require(!currentProduct.ended);
         emit AuctionEnded(highestBidder, highestBid);
-        ended = true;
+        currentProduct.ended = true;
         beneficiary.transfer(highestBid);
     }
 
@@ -342,14 +322,6 @@ contract eShop {
         require(_price > 0);
         //increase product productCount
         productCount ++;
-        //create the product
-        //        products[productCount] = Product(
-        //            productCount,
-        //            _name,
-        //            _price,
-        //            msg.sender,
-        //            false,
-        //            State.Created);
         /*
          * Note how in all the functions, a struct type is assigned to
          * a local variable with data location storage. This does not copy
@@ -364,8 +336,7 @@ contract eShop {
         newProduct.owner = msg.sender;
         newProduct.beneficiary = msg.sender;
         newProduct.purchased = false;
-        newProduct.state = State.Created;
-
+        //newProduct.state = State.Created;
         //trigger an event
         emit ProductCreated(productCount, _name, _price, msg.sender, false, State.Created);
     }
@@ -377,16 +348,7 @@ contract eShop {
         // productWithBidsCount++;
         ProductWithBids storage newProduct = product;
 
-        //init new Auction , do we need it anymore? TODO
-        // newProduct.biddingEnd =  60;//block.timestamp + 60
-        // newProduct.revealEnd = newProduct.biddingEnd + 60;
-
-        ////TODO modify it so it can support multiple auctions at the same time.
-        // biddingEndArray[newProduct.id] = block.timestamp + 60;
-        //revealEndArray[newProduct.id] = biddingEndArray[newProduct.id] + 60;
-
-        biddingEnd = block.timestamp + 30;
-        revealEnd = biddingEnd + 60;
+        //TODO modify it so it can support multiple auctions at the same time.
 
         setAuctionVars(newProduct);
     }

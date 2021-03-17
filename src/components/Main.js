@@ -1,70 +1,27 @@
 import React, {Component} from 'react';
 
-//TODO create arguments for dynamic calls, aka biddingTime, revealTime.
+function countDownTimer(time, id) {
 
-
-//TODO this part needs comments..
-// eslint-disable-next-line
-function auctionHouse(biddingEnd, revealEnd, id) {
-
-    let realTimeBidding;
-    let realTimeReveal;
-    //let now =  new Date(biddingEnd * 1000).getSeconds();//new Date().getUTCSeconds();
-
-    //let realTime;
+    let realTime;
     let countDown;
-    let secondCountDown;
-
     countDown = setInterval(function () {
 
-        // console.log(JSON.parse(localStorage.getItem(id)) + " outside the loop");
-
-        // if () {
-
-        realTimeBidding = --biddingEnd;
-
-        //  console.log("inside the first if the loop");
-        //
-        // } else {
-        //     realTimeBidding[id] -= 1;
-        //
-        //
-        // }
-        // realTime = --biddingEnd;
-        //console.log(localStorage.getItem(id));
-        console.log(realTimeBidding);
-
+        realTime = --time;
         // console.log(realTime);
 
-        document.getElementById("bidding").innerHTML = realTimeBidding + ":s";
+        if (id === "bidding")
+            document.getElementById("bidding").innerHTML = realTime + ":s";
+        else
+            document.getElementById("reveal").innerHTML = realTime + ":s";
 
-        //this.props.updateBiddingEnd(id, biddingEnd)
-
-        if (realTimeBidding === 0 || realTimeBidding < 0) {
-            // myButton.addEventListener('click', myFunction); TODO
+        if (realTime <= 0) {
             clearInterval(countDown)
-            document.getElementById("bidding").innerHTML = "Closed";
-
-            //revealEnd = biddingEnd + 10; not needed, delete it? TODO
-
-            secondCountDown = setInterval(function () {
-
-                realTimeReveal = --revealEnd;
-
-                document.getElementById("reveal").innerHTML = realTimeReveal + ":s";
-
-                if (realTimeReveal === 0 || realTimeReveal < 0) {
-                    clearInterval(secondCountDown)
-                    document.getElementById("reveal").innerHTML = "Revealed";
-                    //ButtonAction
-                }
-            }, 1000)
-
-
-            // document.getElementById("reveal").innerHTML ="Closed";
+            if (id === "bidding")
+                document.getElementById("bidding").innerHTML = "Closed";
+            else
+                document.getElementById("reveal").innerHTML = "Revealed";
         }
     }, 1000)
-
 }
 
 
@@ -180,8 +137,16 @@ class Main extends Component {
                                 <td>{product.owner}</td>
 
                                 <td id="bidding">
-
-
+                                    {
+                                        //TODO change this later when states will be completed.
+                                        product.biddingTime === false
+                                            ? null
+                                            :
+                                            product.biddingEnd - Math.floor(Date.now() / 1000) < 0 || isNaN(product.biddingEnd)
+                                                ? null
+                                                :
+                                                countDownTimer(product.biddingEnd - Math.floor(Date.now() / 1000), "bidding")
+                                    }
                                 </td>
                                 <td className="bidColumn">
                                     <div>
@@ -202,36 +167,50 @@ class Main extends Component {
                                             placeholder="Fake"
                                             required/>
                                     </div>
-                                    {product.purchased
-                                        //product.biddingTime && misses
-                                        ? <button
+                                    {
+                                        product.purchased &&
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) > 0 &&
+                                        product.biddingTime === true
+                                            ? <button
 
-                                            onClick={(event) => {
+                                                onClick={(event) => {
 
-                                                const byte32Bid = window.web3.utils.toWei(this.productPriceBid.value.toString());
-                                                this.props.bidProduct(
-                                                    byte32Bid,
-                                                    this.productFake.value.toString(),
-                                                    product.id,
-                                                    product.bidsCount
-                                                )
-                                            }}>
-                                            Bid
-                                        </button>
-                                        : null
+                                                    const byte32Bid = window.web3.utils.toWei(this.productPriceBid.value.toString());
+                                                    this.props.bidProduct(
+                                                        byte32Bid,
+                                                        this.productFake.value.toString(),
+                                                        product.id,
+                                                        product.bidsCount
+                                                    )
+                                                }}>
+                                                Bid
+                                            </button>
+                                            : null
                                     }
 
                                 </td>
-                                <td id="reveal">{}</td>
+                                <td id="reveal">
+                                    {
+                                        product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 &&
+                                        !isNaN(product.revealEnd)
+                                            ? countDownTimer(product.revealEnd - Math.floor(Date.now() / 1000),
+                                            "false")
+                                            : null
+                                    }
+                                </td>
                                 <td>
-                                    {(!product.biddingTime && product.revealTime && product.purchased)
-                                        ? <button
-                                            onClick={(event) => {
-                                                this.props.reveal(product.bidsCount)
-                                            }}>
-                                            Reveal
-                                        </button>
-                                        : null
+                                    {
+                                        product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 &&
+                                        !isNaN(product.revealEnd)
+                                            ? <button
+                                                onClick={(event) => {
+                                                    this.props.reveal(product.bidsCount)
+                                                }}>
+                                                Reveal
+                                            </button>
+                                            : null
                                     }
                                 </td>
                                 <td>
@@ -239,23 +218,29 @@ class Main extends Component {
                                 </td>
                                 <td id="withdraw">{}</td>
                                 <td>
-                                    {(!product.biddingTime && product.revealTime && product.purchased)
-                                        ? <button
-                                            onClick={(event) => {
-                                                this.props.withdraw();
-                                            }}>
-                                            withdraw
-                                        </button>
-                                        : null
+                                    {
+                                        product.revealEnd - Math.floor(Date.now() / 1000) < 0 &&
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 &&
+                                        !isNaN(product.revealEnd) &&
+                                        product.purchased
+                                            ? <button
+                                                onClick={(event) => {
+                                                    this.props.withdraw();
+                                                }}>
+                                                withdraw
+                                            </button>
+                                            : null
                                     }
                                 </td>
                                 <td>
-                                    {/*//TODO change the conditions*/}
                                     {
-                                        (!product.biddingTime && product.revealTime && product.purchased)
+                                        product.revealEnd - Math.floor(Date.now() / 1000) < 0 &&
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 &&
+                                        !isNaN(product.revealEnd) &&
+                                        product.purchased
                                             ? <button
                                                 onClick={(event) => {
-                                                    this.props.auctionEnd();
+                                                    this.props.auctionEnd(product.id);
                                                 }}>
                                                 EndAuction
                                             </button>
