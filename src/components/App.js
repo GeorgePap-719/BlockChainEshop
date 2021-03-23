@@ -46,7 +46,6 @@ class App extends Component {
 
         //Loading the contract's networkData ..
         const networkDataEshop = eShop.networks[networkId]
-        //const networkDataBid = BlindAuction.networks[networkId]
 
         //Load eShop
         if (networkDataEshop) {
@@ -58,6 +57,7 @@ class App extends Component {
             this.setState({globalBidsCount})
             const productCount = await eshop.methods.productCount().call()
             this.setState({productCount})
+
             //Load products checkValidServiceWorker
             for (var i = 1; i <= productCount; i++) {
                 const productWithBids = await eshop.methods.internalProducts(i).call()
@@ -67,26 +67,6 @@ class App extends Component {
             }
             console.log("productsCount: ", productCount.toString())
             console.log("globalBids: ", globalBidsCount.toString())
-
-            //Update live-Time
-            // let biddingEnd = await eshop.methods.biddingEnd().call() - Math.floor(Date.now() / 1000)
-            // let revealEnd = await eshop.methods.revealEnd().call() - Math.floor(Date.now() / 1000)
-            //
-            // if (biddingEnd < 0 || isNaN(biddingEnd))
-            //     biddingEnd = 0
-            // if (revealEnd < 0 || isNaN(revealEnd))
-            //     revealEnd = 0
-            //
-            // console.log("biddingEnd: ", biddingEnd.toString())
-            // console.log("revealEnd: ", revealEnd.toString())
-
-            for (var j = 0; j < globalBidsCount; j++) {
-
-                const nakedBids = await eshop.methods.nakedBids(this.state.account, j).call()
-                this.setState({
-                    nakedBids: [...this.state.nakedBids, nakedBids]
-                })
-            }
 
             this.setState({loading: false})
         } else {
@@ -109,25 +89,12 @@ class App extends Component {
         this.createProduct = this.createProduct.bind(this)
         this.purchaseProduct = this.purchaseProduct.bind(this)
         this.bidProduct = this.bidProduct.bind(this)
-        this.checkBidding = this.checkBidding.bind(this)//
         this.reveal = this.reveal.bind(this)
         this.withdraw = this.withdraw.bind(this)
         this.auctionEnd = this.auctionEnd.bind(this)
     }
 
-    //Function for calling the corresponding function inside the smart contract
-    checkBidding(id) {
-        // this.setState({loading: true})
-        //         // this.state.eshop.methods.checkBidding(id)
-        //         //     .send({from: this.state.account})
-        //         //     .once('receipt', (receipt) => {
-        //         //         //window.location.reload()
-        //         //     })
-        //         // this.setState({loading: false})
-        //
-    }
 
-    //Function for calling the corresponding function inside the smart contract
     createProduct(name, price) {
         this.setState({loading: true})
         console.log("emit createdProduct")
@@ -143,7 +110,7 @@ class App extends Component {
         //
     }
 
-    //Function for calling the corresponding function inside the smart contract
+
     purchaseProduct(id, price) {
         this.setState({loading: true})
         this.state.eshop.methods.purchaseProduct(id)
@@ -156,24 +123,23 @@ class App extends Component {
         //  window.location.reload(false);
     }
 
-    //Function for calling the corresponding function inside the smart contract
     bidProduct(price, fake, id, bidsCount) {
 
         this.setState({loading: true})
 
+        // console.log("before cast fake: ", fake)
+        console.log("fake :", fake)
+
         const secret = "eShop";
-        const _price = window.web3.utils.fromWei(price.toString(), 'ether');
+        const _price = window.web3.utils.fromWei(price.toString(), 'Ether');
 
         const blindedBid = window.web3.utils.soliditySha3(
-            {t: 'uint', v: parseInt(_price)},
+            {t: 'uint', v: price}, //parseInt(_price)
             {t: 'bool', v: fake},
             {t: 'string', v: secret}
         );
 
-
         //TODO impl support for multiple users.
-        //tempBid + this.state.account
-        //Another idea is to make BidsCount 2d and store this.state.account
 
         console.log(parseInt(_price) + ": price");
         console.log("tempBid First Look : ", bidsCount);
@@ -181,7 +147,7 @@ class App extends Component {
         this.state.eshop.methods.checkBidding(
             id,
             blindedBid,
-            _price,
+            price,
             fake,
             secret
         )
@@ -208,42 +174,16 @@ class App extends Component {
     /// Reveal your blinded bids. You will get a refund for all
     /// correctly blinded invalid bids and for all bids except for
     /// the totally highest.
-    reveal() {
-
+    reveal(id) {
         this.setState({loading: true})
 
-        let _price = [];
-        let _fake = [];
-        let _secret = [];
-
-        let bids = this.state.nakedBids
-
-        console.log("bids: ", bids);
-
-        this.state.nakedBids.forEach(bids => {
-                _price.push(bids.values)
-            _fake.push(bids.fake)
-            _secret.push(bids.secret)
-            }
-        )
-
-        console.log("_price: ", _price)
-        console.log("_fake: ", _fake)
-        console.log("_secret: ", _secret)
-
-        this.state.eshop.methods.reveal(
-            _price,
-            _fake,
-            _secret
-        )
+        this.state.eshop.methods.reveal(id)
             .send({from: this.state.account})
             .once('receipt', (receipt) => {
                     //window.location.reload()
                 },
                 () => {
-                    console.log("bids.values: ", _price)
-                    console.log("bids.fake: ", _fake)
-                    console.log("bids.secret: ", _secret)
+                    console.log("revealed")
                 })
 
         this.setState({loading: false})
@@ -267,11 +207,11 @@ class App extends Component {
 
 
     //Withdraw a bid that was overbid.
-    withdraw() {
+    withdraw(id) {
         this.setState({loading: true})
 
         if (this.state.eshop)
-            this.state.eshop.methods.withdraw()
+            this.state.eshop.methods.withdraw(id)
                 .send({from: this.state.account})
                 .once('receipt', (receipt) => {
 
@@ -312,7 +252,6 @@ class App extends Component {
                                     reveal={this.reveal}
                                     withdraw={this.withdraw}
                                     auctionEnd={this.auctionEnd}
-                                    checkBidding={this.checkBidding}
                                 />
                             }
                         </main>

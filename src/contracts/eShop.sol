@@ -11,7 +11,7 @@ pragma experimental ABIEncoderV2;
 contract eShop {
     string public name;
     uint public productCount = 0;
-    uint value;//value == price
+    //uint value;//value == price
 
     //Safely Remote
     address payable public seller;
@@ -22,15 +22,12 @@ contract eShop {
 
     mapping(uint => ProductWithBids) public internalProducts;
 
-    mapping(address => Bid[]) public bids;
-    mapping(address => SecretBids[]) public nakedBids;
+    //mapping(address => Bid[]) public bids;
+    //mapping(address => SecretBids[]) public nakedBids;
     uint public globalBidsCount = 0;
 
-    address public highestBidder;
-    uint public highestBid;
-
     // Allowed withdrawals of previous bids
-    mapping(address => uint) pendingReturns;
+    //mapping(address => uint) pendingReturns;
 
     enum State {Created, Locked, Release, Inactive}
     // The state variable has a default value of the first member(Created)
@@ -93,15 +90,20 @@ contract eShop {
         address payable owner;
         address payable beneficiary;
         bool purchased;
-        // State state;
-        mapping(address => Bid[]) bids;
-        uint bidsCount;
-        bool ended;
-        bool biddingTime;//TODO delete it
-        bool revealTime;//TODO delete it
 
+        mapping(address => Bid[]) bids;
+        mapping(address => SecretBids[]) nakedBids;
+        // Allowed withdrawals of previous bids
+        mapping(address => uint) pendingReturns;
+
+        uint bidsCount;
+
+        bool ended;
         uint biddingEnd;
         uint revealEnd;
+
+        address highestBidder;
+        uint highestBid;
     }
 
 
@@ -128,6 +130,12 @@ contract eShop {
     event ItemReceived();
     event SellerRefunded();
 
+    event isTrue(bool flag);
+    event isFalse(bool flag);
+    event deposit(uint value);
+    event depositValue(uint value);
+    event IWillReturnTrue();
+    event DidNotMeetRequireYet();
     event NotRevealedYet(address refunded);
     event AuctionEnded(address winner, uint highestBid);
     event NewAuctionBegins();
@@ -152,33 +160,28 @@ contract eShop {
     public
     payable {
         ProductWithBids storage newProduct = internalProducts[_id];
-
         //onlyBefore
         if (block.timestamp < newProduct.biddingEnd) {
-            bid(_blindedBid);
+            bid(_blindedBid, _id);
             pushNakedBids(
                 _values,
                 _fake,
-                _secret
+                _secret,
+                _id
             );
             newProduct.bidsCount++;
         }
-        else {
-            newProduct.biddingTime = false;
-            newProduct.revealTime = true;
-        }
-
     }
 
     function setAuctionVars(ProductWithBids storage product) internal {
-
+        // We cannot use "campaigns[campaignID] = Campaign(beneficiary, goal, 0, 0)"
+        // because the RHS creates a memory-struct "Campaign" that contains a mapping.
+        // productWithBidsCount++;
         ProductWithBids storage newProduct = product;
 
-        newProduct.biddingTime = true;
-        newProduct.revealTime = false;
         newProduct.ended = false;
         newProduct.bidsCount = 0;
-        newProduct.biddingEnd = block.timestamp + 30;
+        newProduct.biddingEnd = block.timestamp + 40;
         newProduct.revealEnd = newProduct.biddingEnd + 60;
         //        bidsCount = 0;
     }
@@ -192,29 +195,33 @@ contract eShop {
     /// not the exact amount are ways to hide the real bid but
     /// still make the required deposit. The same address can
     /// place multiple bids.
-    function bid(bytes32 _blindedBid)
+    function bid(bytes32 _blindedBid, uint id)
     public
     payable
-        //onlyBefore(biddingEnd)
+        //onlyBefore(biddingEnd) TODO
     {
-        bids[msg.sender].push(Bid({
+        ProductWithBids storage newProduct = internalProducts[id];
+
+        newProduct.bids[msg.sender].push(Bid({
         blindedBid : _blindedBid,
         deposit : msg.value
         }));
 
         globalBidsCount++;
-        //        bidsCount++;
     }
 
     function pushNakedBids(
         uint _values,
         bool _fake,
-        string memory _secret
+        string memory _secret,
+        uint id
     )
     public
     payable
     {
-        nakedBids[msg.sender].push(SecretBids({
+        ProductWithBids storage newProduct = internalProducts[id];
+
+        newProduct.nakedBids[msg.sender].push(SecretBids({
         values : _values,
         fake : _fake,
         secret : _secret
@@ -225,24 +232,27 @@ contract eShop {
     /// Reveal your blinded bids. You will get a refund for all
     /// correctly blinded invalid bids and for all bids except for
     /// the totally highest.
-    function reveal(
+    function revealInternal(
         uint[] memory _values,
         bool[] memory _fake,
-        string[] memory _secret
+        string[] memory _secret,
+        uint _id
     )
     public
     payable
-        //onlyAfter(biddingEnd) TODO Uncomment it
-        //onlyBefore(revealEnd) TODO Uncomment it
+    onlyAfter(biddingEnd)
+    onlyBefore(revealEnd)
     {
-        uint length = bids[msg.sender].length;
+        ProductWithBids storage newProduct = internalProducts[_id];
+
+        uint length = newProduct.bids[msg.sender].length;
         require(_values.length == length);
         require(_fake.length == length);
         require(_secret.length == length);
 
         uint refund;
         for (uint i = 0; i < length; i++) {
-            Bid storage bidToCheck = bids[msg.sender][i];
+            Bid storage bidToCheck = newProduct.bids[msg.sender][i];
             (uint value, bool fake, string memory secret) =
             (_values[i], _fake[i], _secret[i]);
             if (bidToCheck.blindedBid != keccak256(abi.encodePacked(value, fake, secret))) {
@@ -252,8 +262,17 @@ contract eShop {
                 continue;
             }
             refund += bidToCheck.deposit;
+            //TODO never goes in if, Investigate
+            if (fake) {
+                emit isTrue(fake);
+                //TODO isTrue
+            } else {
+                emit isFalse(fake);
+                emit deposit(bidToCheck.deposit);
+                emit depositValue(value);
+            }
             if (!fake && bidToCheck.deposit >= value) {
-                if (placeBid(msg.sender, value))
+                if (placeBid(msg.sender, value, _id))
                     refund -= value;
             }
             // Make it impossible for the sender to re-claim
@@ -267,14 +286,15 @@ contract eShop {
 
     /// Withdraw a bid that was overbid.
     //This cant be called by js?3
-    function withdraw() public payable {
-        uint amount = pendingReturns[msg.sender];
+    function withdraw(uint _id) public payable {
+        ProductWithBids storage newProduct = internalProducts[_id];
+        uint amount = newProduct.pendingReturns[msg.sender];
         if (amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `transfer` returns (see the remark above about
             // conditions -> effects -> interaction).
-            pendingReturns[msg.sender] = 0;
+            newProduct.pendingReturns[msg.sender] = 0;
 
             msg.sender.transfer(amount);
         }
@@ -285,31 +305,37 @@ contract eShop {
     function auctionEnd(uint _id)
     public
     payable
-        //onlyAfter(revealEnd)
+    onlyAfter(revealEnd)
     {
         ProductWithBids storage currentProduct = internalProducts[_id];
 
         require(!currentProduct.ended);
-        emit AuctionEnded(highestBidder, highestBid);
+        emit AuctionEnded(
+            currentProduct.highestBidder,
+            currentProduct.highestBid
+        );
         currentProduct.ended = true;
-        beneficiary.transfer(highestBid);
+        beneficiary.transfer(currentProduct.highestBid);
     }
 
     // This is an "internal" function which means that it
     // can only be called from the contract itself (or from
     // derived contracts).
-    function placeBid(address bidder, uint value) internal
+    function placeBid(address bidder, uint value, uint id) internal
     returns (bool success)
     {
-        if (value <= highestBid) {
+        ProductWithBids storage newProduct = internalProducts[id];
+
+        if (value <= newProduct.highestBid) {
             return false;
         }
-        if (highestBidder != address(0)) {
+        if (newProduct.highestBidder != address(0)) {
             // Refund the previously highest bidder.
-            pendingReturns[highestBidder] += highestBid;
+            newProduct.pendingReturns[newProduct.highestBidder] += newProduct.highestBid;
         }
-        highestBid = value;
-        highestBidder = bidder;
+        newProduct.highestBid = value;
+        newProduct.highestBidder = bidder;
+        emit IWillReturnTrue();
         return true;
     }
     //End of BlindAuction
@@ -342,15 +368,14 @@ contract eShop {
     }
 
     function beginAuction(ProductWithBids storage product) internal {
-        //
         // We cannot use "campaigns[campaignID] = Campaign(beneficiary, goal, 0, 0)"
         // because the RHS creates a memory-struct "Campaign" that contains a mapping.
         // productWithBidsCount++;
-        ProductWithBids storage newProduct = product;
+        //ProductWithBids storage newProduct = product;
 
         //TODO modify it so it can support multiple auctions at the same time.
 
-        setAuctionVars(newProduct);
+        setAuctionVars(product);
     }
 
     function purchaseProduct(uint _id) public payable {
@@ -370,8 +395,6 @@ contract eShop {
         _product.owner = msg.sender;
         //Mark as purchasedProduct
         _product.purchased = true;
-        //update the product maybe we dont need it anymore cause of storage type
-        //internalProducts[_id] = _product;
         //Pay the seller by sending them Ether
         _seller.transfer(msg.value);
         //trigger an event
@@ -380,13 +403,59 @@ contract eShop {
         beginAuction(_product);
     }
 
-    //Public setter
-    function updateBiddingEnd(uint _id, uint _biddingEnd) public {
-        //Fetch the Product
-        //ProductWithBids storage product = internalProducts[_id];
-        //updateTheBidding
-        // product.biddingEnd = _biddingEnd;
+    /*
+     * main function responsible for revealing
+     * the bids.
+     */
+    function reveal(
+        uint _id
+    )
+    public
+    payable
+    onlyAfter(biddingEnd)
+    onlyBefore(revealEnd)
+    {
+        ProductWithBids storage selectedProduct = internalProducts[_id];
+        uint count = selectedProduct.bidsCount;
+
+        uint[] memory values = new uint[](count);
+        bool[] memory fake = new bool[](count);
+        string[] memory secret = new string[](count);
+
+        for (uint i = 0; i < count; i++) {
+            values[i] = selectedProduct.nakedBids[msg.sender][i].values;
+            fake[i] = selectedProduct.nakedBids[msg.sender][i].fake;
+            secret[i] = selectedProduct.nakedBids[msg.sender][i].secret;
+        }
+
+        //TODO call revealInternal
+        revealInternal(
+            values,
+            fake,
+            secret,
+            _id
+        );
     }
 }
 
-// TODO eshop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

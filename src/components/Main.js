@@ -24,6 +24,10 @@ function countDownTimer(time, id) {
     }, 1000)
 }
 
+String.prototype.toBoolean = function () {
+    let dictionary = {"true": true, "false": false};
+    return dictionary[this];
+};
 
 class Main extends Component {
 
@@ -93,8 +97,6 @@ class Main extends Component {
                                             value={product.price}
                                             onClick={(event) => {
                                                 this.props.purchaseProduct(event.target.name, event.target.value)
-                                                //this.props.newAuction(this.biddingEnd, this.revealEnd)
-                                                //auctionHouse()
                                             }}>
                                             Buy & Begin Auction
                                         </button>
@@ -139,13 +141,10 @@ class Main extends Component {
                                 <td id="bidding">
                                     {
                                         //TODO change this later when states will be completed.
-                                        product.biddingTime === false
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 || isNaN(product.biddingEnd)
                                             ? null
                                             :
-                                            product.biddingEnd - Math.floor(Date.now() / 1000) < 0 || isNaN(product.biddingEnd)
-                                                ? null
-                                                :
-                                                countDownTimer(product.biddingEnd - Math.floor(Date.now() / 1000), "bidding")
+                                            countDownTimer(product.biddingEnd - Math.floor(Date.now() / 1000), "bidding")
                                     }
                                 </td>
                                 <td className="bidColumn">
@@ -160,25 +159,26 @@ class Main extends Component {
                                             required/>
                                         <input
                                             id="productFake bid"
-                                            type="boolean"
+                                            type="bool" //TODO needs checking
                                             ref={(input) => {
                                                 this.productFake = input
                                             }}
                                             placeholder="Fake"
                                             required/>
                                     </div>
+
                                     {
-                                        product.purchased &&
-                                        product.biddingEnd - Math.floor(Date.now() / 1000) > 0 &&
-                                        product.biddingTime === true
+
+
+                                        product.purchased //&&
+                                            // product.biddingEnd - Math.floor(Date.now() / 1000) > 0
                                             ? <button
-
                                                 onClick={(event) => {
-
-                                                    const byte32Bid = window.web3.utils.toWei(this.productPriceBid.value.toString());
+                                                    console.log("productFake :", this.productFake.value)
+                                                    const price = window.web3.utils.toWei(this.productPriceBid.value.toString(), 'Ether');
                                                     this.props.bidProduct(
-                                                        byte32Bid,
-                                                        this.productFake.value.toString(),
+                                                        price,
+                                                        this.productFake.value.toBoolean(),
                                                         product.id,
                                                         product.bidsCount
                                                     )
@@ -201,12 +201,12 @@ class Main extends Component {
                                 </td>
                                 <td>
                                     {
-                                        product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
-                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 &&
-                                        !isNaN(product.revealEnd)
+                                        // product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
+                                        product.biddingEnd - Math.floor(Date.now() / 1000) < 0 //&&
+                                            // !isNaN(product.revealEnd)
                                             ? <button
                                                 onClick={(event) => {
-                                                    this.props.reveal(product.bidsCount)
+                                                    this.props.reveal(product.id)
                                                 }}>
                                                 Reveal
                                             </button>
@@ -225,7 +225,7 @@ class Main extends Component {
                                         product.purchased
                                             ? <button
                                                 onClick={(event) => {
-                                                    this.props.withdraw();
+                                                    this.props.withdraw(product.id);
                                                 }}>
                                                 withdraw
                                             </button>
