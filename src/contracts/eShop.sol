@@ -11,9 +11,6 @@ pragma experimental ABIEncoderV2;
 contract eShop {
     string public name;
     uint public productCount = 0;
-    //Safely Remote
-    address payable public seller;
-    address payable public buyer;
     //BlindAuction
     address payable public beneficiary;//seller
     //Money for paying the transporter(winner of the auction),
@@ -21,6 +18,13 @@ contract eShop {
     mapping(uint => uint) public transportDeposit;
 
     mapping(uint => ProductWithBids) public internalProducts;
+    /*
+     * this struct serves only for storing extra
+     * variables since solidity structs can not handle
+     * more than 16 entries in the struct otherwise we
+     * will get error:
+     * Stack too deep when compiling inline assembly.
+     */
     mapping(uint => AdditionalVars) private extraProductVars;
     uint public globalBidsCount = 0;
 
@@ -37,24 +41,6 @@ contract eShop {
     //        _;}
     //    modifier onlyAfter(uint _time) {require(block.timestamp > _time);
     //    _;}
-
-    //TODO delete it?
-    modifier onlyBuyer() {
-        require(
-            msg.sender == buyer,
-            "Only buyer can call this."
-        );
-        _;
-    }
-
-    //TODO delete it?
-    modifier onlySeller() {
-        require(
-            msg.sender == seller,
-            "Only seller can call this."
-        );
-        _;
-    }
 
     struct Bid {
         bytes32 blindedBid;
@@ -84,10 +70,8 @@ contract eShop {
         bool ended;
         uint biddingEnd;
         uint revealEnd;
-        //TODO change the name
-        address payable highestBidder;
-        //TODO change the name
-        uint highestBid;
+        address payable lowestBidder;
+        uint lowestBid;
     }
 
     struct AdditionalVars {
@@ -132,8 +116,6 @@ contract eShop {
     /// Check via multiplication that it wasn't an odd number
     constructor() payable {
         name = "Dapp eShop";
-        seller = msg.sender;
-        beneficiary = msg.sender;
     }
 
     //noinspection UnprotectedFunction
@@ -354,29 +336,26 @@ contract eShop {
     /// to the beneficiary.
     function auctionEnd(uint _id) public payable {
         ProductWithBids storage selectedProduct = internalProducts[_id];
-        AdditionalVars storage extraVars = extraProductVars[_id];
         //onlyAfter revealEnd
         require(block.timestamp > selectedProduct.revealEnd);
 
         require(!selectedProduct.ended);
         emit AuctionEnded(
-            selectedProduct.highestBidder,
-            selectedProduct.highestBid
+            selectedProduct.lowestBidder,
+            selectedProduct.lowestBid
         );
 
-        //TODO
         // It is important to place this if because the recipient
         // can call this function again as part of the receiving call
         // before `transfer` returns .
-        if (transportDeposit[_id] - selectedProduct.highestBid >= 0 && !selectedProduct.ended) {
-            selectedProduct.highestBidder.transfer(selectedProduct.highestBid + selectedProduct.highestBid);
-            transportDeposit[_id] -= selectedProduct.highestBid;
+        if (transportDeposit[_id] - selectedProduct.lowestBid >= 0 && !selectedProduct.ended) {
+            selectedProduct.lowestBidder.transfer(selectedProduct.lowestBid + selectedProduct.lowestBid);
+            transportDeposit[_id] -= selectedProduct.lowestBid;
         }
 
         refundSeller(
             selectedProduct.beneficiary,
-            _id,
-            transportDeposit[_id]
+            _id
         );
         selectedProduct.ended = true;
     }
@@ -416,7 +395,7 @@ contract eShop {
         AdditionalVars storage extraVars = extraProductVars[_id];
         //Init Auction Vars
         extraVars.firstTime = true;
-        selectedProduct.highestBid = 0;
+        selectedProduct.lowestBid = 0;
         selectedProduct.ended = false;
         selectedProduct.bidsCount = 0;
         selectedProduct.biddingEnd = block.timestamp + 40;
@@ -440,17 +419,17 @@ contract eShop {
         AdditionalVars storage extraVars = extraProductVars[id];
 
         //TODO this is reversed.
-        if (value >= selectedProduct.highestBid && !extraVars.firstTime)
+        if (value >= selectedProduct.lowestBid && !extraVars.firstTime)
             return false;
         else
             extraVars.firstTime = false;
 
-        if (selectedProduct.highestBidder != address(0)) {
+        if (selectedProduct.lowestBidder != address(0)) {
             // Refund the previously highest bidder.
-            selectedProduct.pendingReturns[selectedProduct.highestBidder] += selectedProduct.highestBid;
+            selectedProduct.pendingReturns[selectedProduct.lowestBidder] += selectedProduct.lowestBid;
         }
-        selectedProduct.highestBid = value;
-        selectedProduct.highestBidder = bidder;
+        selectedProduct.lowestBid = value;
+        selectedProduct.lowestBidder = bidder;
         emit IWillReturnTrue();
         return true;
     }
@@ -458,13 +437,12 @@ contract eShop {
 
     function refundSeller(
         address payable _seller,
-        uint _id,
-        uint amount
+        uint _id
     )
     public
     payable
     {
-        //TODO needs clean up.
+        uint amount = transportDeposit[_id];
         if (amount > 0) {
             _seller.transfer(amount);
             // It is important to set this to zero because the recipient
@@ -472,7 +450,8 @@ contract eShop {
             // before `transfer` returns .
             transportDeposit[_id] = 0;
         } else if (amount < 0) {
-            //emit event something went wrong.
+            //emit event about the state
+            //of transportDeposit[_id].
         }
     }
 }

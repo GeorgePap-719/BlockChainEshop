@@ -32,7 +32,7 @@ contract('eShop', ([deployer, seller, buyer]) => {
     })
 
     describe('products', async () => {
-        let result, productCount,bidTime
+        let result, productCount, bidTime
 
         before(async () => {
             result = await eshop.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), {from: seller})
@@ -56,12 +56,8 @@ contract('eShop', ([deployer, seller, buyer]) => {
             await eshop.createProduct('iPhone X', web3.utils.toWei('0', 'Ether'), {from: seller}).should.be.rejected;
         })
 
-        it('updatesBidding', async () => {
-            bidTime = await eshop.setUpdateBiddingEnd('1', '50')
-        })
-
         it('lists products', async () => {
-            const product = await eshop.products(productCount)
+            const product = await eshop.internalProducts(productCount)
             assert.equal(product.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(product.name, 'iPhone X', 'name is correct')
             assert.equal(product.price, '1000000000000000000', 'price is correct')
