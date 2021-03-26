@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 
 function countDownTimer(time, id) {
+    //TODO fix the alignment
 
     let realTime;
     let countDown;
@@ -24,6 +25,7 @@ function countDownTimer(time, id) {
     }, 1000)
 }
 
+// eslint-disable-next-line
 String.prototype.toBoolean = function () {
     let dictionary = {"true": true, "false": false};
     return dictionary[this];

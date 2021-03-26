@@ -97,10 +97,8 @@ class App extends Component {
 
     createProduct(name, price) {
         this.setState({loading: true})
-        console.log("emit createdProduct")
-
         this.state.eshop.methods.createProduct(name, price)
-            .send({from: this.state.account})
+            .send({from: this.state.account, value: price})
             .once('receipt', (receipt) => {
                 //window.location.reload()
                 console.log("emit createdProduct")
