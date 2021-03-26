@@ -1,7 +1,14 @@
-pragma solidity >0.4.23 <0.7.0;
+// SPDX-License-Identifier: Do What The F*ck You Want To Public License
+
+/*
+ * Everything in coffeeContracts directory will not be compiled.
+ * This is necessary as they do not have been updated to compile with solidity 0.7.4
+ * Version : solidity 0.5.8
+*/
+pragma solidity 0.7.4;
 
 //TODO modify for eshp
-contract BlindAuction {
+abstract contract blindAuction {
     struct Bid {
         bytes32 blindedBid;
         uint deposit;
@@ -27,8 +34,10 @@ contract BlindAuction {
     /// functions. `onlyBefore` is applied to `bid` below:
     /// The new function body is the modifier's body where
     /// `_` is replaced by the old function body.
-    modifier onlyBefore(uint _time) { require(now < _time); _; }
-    modifier onlyAfter(uint _time) { require(now > _time); _; }
+    modifier onlyBefore(uint _time) {require(now < _time);
+        _;}
+    modifier onlyAfter(uint _time) {require(now > _time);
+        _;}
 
     constructor(
         uint _biddingTime,
@@ -50,14 +59,14 @@ contract BlindAuction {
     /// still make the required deposit. The same address can
     /// place multiple bids.
     function bid(bytes32 _blindedBid)
-        public
-        payable
-        onlyBefore(biddingEnd)
+    public
+    payable
+    onlyBefore(biddingEnd)
     {
         bids[msg.sender].push(Bid({
-            blindedBid: _blindedBid,
-            deposit: msg.value
-        }));
+            blindedBid : _blindedBid,
+            deposit : msg.value
+            }));
     }
 
     /// Reveal your blinded bids. You will get a refund for all
@@ -68,9 +77,9 @@ contract BlindAuction {
         bool[] memory _fake,
         bytes32[] memory _secret
     )
-        public
-        onlyAfter(biddingEnd)
-        onlyBefore(revealEnd)
+    public
+    onlyAfter(biddingEnd)
+    onlyBefore(revealEnd)
     {
         uint length = bids[msg.sender].length;
         require(_values.length == length);
@@ -81,7 +90,7 @@ contract BlindAuction {
         for (uint i = 0; i < length; i++) {
             Bid storage bidToCheck = bids[msg.sender][i];
             (uint value, bool fake, bytes32 secret) =
-                    (_values[i], _fake[i], _secret[i]);
+            (_values[i], _fake[i], _secret[i]);
             if (bidToCheck.blindedBid != keccak256(abi.encodePacked(value, fake, secret))) {
                 // Bid was not actually revealed.
                 // Do not refund deposit.
@@ -89,7 +98,7 @@ contract BlindAuction {
             }
             refund += bidToCheck.deposit;
             if (!fake && bidToCheck.deposit >= value) {
-              //Needs checking here!
+                //Needs checking here!
                 if (placeBid(msg.sender, value))
                     refund -= value;
             }
@@ -117,8 +126,8 @@ contract BlindAuction {
     /// End the auction and send the highest bid
     /// to the beneficiary.
     function auctionEnd()
-        public
-        onlyAfter(revealEnd)
+    public
+    onlyAfter(revealEnd)
     {
         require(!ended);
         emit AuctionEnded(lowestBidder, lowestBid);
@@ -133,7 +142,7 @@ contract BlindAuction {
     // can only be called from the contract itself (or from
     // derived contracts).
     function placeBid(address bidder, uint value) internal
-            returns (bool success)
+    returns (bool success)
     {
         if (value >= lowestBid) {
             return false;

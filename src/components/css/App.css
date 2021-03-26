@@ -1,0 +1,13 @@
+.table {
+    width: 38%;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+.form-group.mr-sm-2 {
+    width: 38%;
+}
+
+input#productPrice bid {
+    width: 28px;
+}

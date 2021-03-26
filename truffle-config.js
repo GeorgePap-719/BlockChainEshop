@@ -17,7 +17,7 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
-
+    
 // const HDWalletProvider = require('truffle-hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
@@ -83,6 +83,8 @@ module.exports = {
     contracts_build_directory: './src/abis/',
     compilers: {
         solc: {
+            version: "0.7.4",      // Fetch exact version from solc-bin (default: truffle's version)
+            //parser: "solcjs",
             optimizer: {
                 enabled: true,
                 runs: 200
@@ -96,7 +98,8 @@ module.exports = {
             // Configure your compilers
             compilers: {
                 solc: {
-                    // version: "0.5.1",    // Fetch exact version from solc-bin (default: truffle's version)
+                    version: "0.7.4",      // Fetch exact version from solc-bin (default: truffle's version)
+                    parser: "solcjs"       // Leverages solc-js purely for speedy parsing
                     // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
                     // settings: {          // See the solidity docs for advice about optimization and evmVersion
                     //  optimizer: {
@@ -109,4 +112,5 @@ module.exports = {
             }
         }
     }
-}
+};
+
