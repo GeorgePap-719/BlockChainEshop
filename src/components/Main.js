@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-function countDownTimer(time, id) {
+function countDownTimer(time, id, key) {
     //TODO fix the alignment
 
     let realTime;
@@ -11,16 +11,16 @@ function countDownTimer(time, id) {
         // console.log(realTime);
 
         if (id === "bidding")
-            document.getElementById("bidding").innerHTML = realTime + ":s";
+            document.getElementById("bidding" + key).innerHTML = realTime + ":s";
         else
-            document.getElementById("reveal").innerHTML = realTime + ":s";
+            document.getElementById("reveal" + key).innerHTML = realTime + ":s";
 
         if (realTime <= 0) {
             clearInterval(countDown)
             if (id === "bidding")
-                document.getElementById("bidding").innerHTML = "Closed";
+                document.getElementById("bidding" + key).innerHTML = "Closed";
             else
-                document.getElementById("reveal").innerHTML = "Revealed";
+                document.getElementById("reveal" + key).innerHTML = "Revealed";
         }
     }, 1000)
 }
@@ -140,13 +140,13 @@ class Main extends Component {
                                 </td>
                                 <td>{product.owner}</td>
 
-                                <td id="bidding">
+                                <td id={"bidding" + key}>
                                     {
                                         //TODO change this later when states will be completed.
                                         product.biddingEnd - Math.floor(Date.now() / 1000) < 0 || isNaN(product.biddingEnd)
                                             ? null
                                             :
-                                            countDownTimer(product.biddingEnd - Math.floor(Date.now() / 1000), "bidding")
+                                            countDownTimer(product.biddingEnd - Math.floor(Date.now() / 1000), "bidding", key)
                                     }
                                 </td>
                                 <td className="bidColumn">
@@ -191,13 +191,14 @@ class Main extends Component {
                                     }
 
                                 </td>
-                                <td id="reveal">
+                                <td id={"reveal" + key}>
                                     {
                                         product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
                                         product.biddingEnd - Math.floor(Date.now() / 1000) < 0 &&
                                         !isNaN(product.revealEnd)
                                             ? countDownTimer(product.revealEnd - Math.floor(Date.now() / 1000),
-                                            "false")
+                                            "false",
+                                            key)
                                             : null
                                     }
                                 </td>

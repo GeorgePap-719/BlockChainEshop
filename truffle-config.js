@@ -48,6 +48,10 @@ module.exports = {
             host: "127.0.0.1",     // Localhost (default: none)
             port: 8545,            // Standard Ethereum port (default: none)
             network_id: "*",       // Any network (default: none)match any network id
+            // url: "https://BlockChainEshop.com",
+            https: true,
+            homepage: "https://BlockChainEshop.com",
+            dns: "https://BlockChainEshop.com"
         },
 
         // Another network with more advanced options...
@@ -92,6 +96,7 @@ module.exports = {
 
             // Set default mocha options here, use special reporters etc.
             mocha: {
+                useColors: true
                 // timeout: 100000
             },
 

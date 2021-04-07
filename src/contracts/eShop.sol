@@ -7,7 +7,6 @@ pragma experimental ABIEncoderV2;
  * of dynamic arrays .
  */
 
-
 contract eShop {
     string public name;
     uint public productCount = 0;
