@@ -7,7 +7,6 @@ pragma experimental ABIEncoderV2;
  * of dynamic arrays .
  */
 
-
 contract eShop {
     string public name;
     uint public productCount = 0;
@@ -42,17 +41,6 @@ contract eShop {
     //    modifier onlyAfter(uint _time) {require(block.timestamp > _time);
     //    _;}
 
-    struct Bid {
-        bytes32 blindedBid;
-        uint deposit;
-    }
-
-    struct SecretBids {
-        uint values;
-        bool fake;
-        string secret;
-    }
-
     struct ProductWithBids {
         uint id;
         string name;
@@ -79,6 +67,16 @@ contract eShop {
         bool firstTime;
     }
 
+    struct SecretBids {
+        uint values;
+        bool fake;
+        string secret;
+    }
+
+    struct Bid {
+        bytes32 blindedBid;
+        uint deposit;
+    }
 
     event ProductCreated(
         uint id,
@@ -126,10 +124,10 @@ contract eShop {
     public
     payable
     {
-        //Require a names
-        require(bytes(_name).length > 0);
+        //Require a name
+        require(bytes(_name).length > 0, "Item must have a name");
         //Require a valid price
-        require(_price > 0);
+        require(_price > 0, "Price must be valid");
         //increase product productCount
         productCount ++;
         /*
@@ -165,11 +163,11 @@ contract eShop {
         //Make sure the product has valid id
         require(_product.id > 0 && _product.id <= productCount);
         //Require that there is enough Ether in the transaction
-        require(msg.value >= _product.price);
+        require(msg.value >= _product.price, "Not enough Ether");
         //Require that the product has not been purchased already
-        require(!_product.purchased);
+        require(!_product.purchased, "The product is already purchased");
         //Require that the buyer is not the _seller
-        require(_seller != msg.sender);
+        require(_seller != msg.sender, "The buyer can not be the seller");
         //Transfer ownership to the buyer
         _product.owner = msg.sender;
         //Mark as purchasedProduct
@@ -200,7 +198,7 @@ contract eShop {
     {
         ProductWithBids storage selectedProduct = internalProducts[_id];
         //onlyBefore biddingEnd
-        require(block.timestamp < selectedProduct.biddingEnd);
+        require(block.timestamp < selectedProduct.biddingEnd, "The bidding has closed");
 
         bid(_blindedBid, _id);
         pushNakedBids(
@@ -273,8 +271,8 @@ contract eShop {
     {
         ProductWithBids storage selectedProduct = internalProducts[_id];
         //onlyAfter biddingEnd && onlyBefore revealEnd
-        require(block.timestamp > selectedProduct.biddingEnd);
-        require(block.timestamp < selectedProduct.revealEnd);
+        require(block.timestamp > selectedProduct.biddingEnd, "Only after the bidding has closed");
+        require(block.timestamp < selectedProduct.revealEnd, "The reveal phase has ended");
 
         uint length = selectedProduct.bids[msg.sender].length;
         require(_values.length == length);
@@ -337,9 +335,9 @@ contract eShop {
     function auctionEnd(uint _id) public payable {
         ProductWithBids storage selectedProduct = internalProducts[_id];
         //onlyAfter revealEnd
-        require(block.timestamp > selectedProduct.revealEnd);
+        require(block.timestamp > selectedProduct.revealEnd, "Only after the reveal phase has ended");
 
-        require(!selectedProduct.ended);
+        require(!selectedProduct.ended, "The auction has ended already");
         emit AuctionEnded(
             selectedProduct.lowestBidder,
             selectedProduct.lowestBid
@@ -368,8 +366,8 @@ contract eShop {
     function reveal(uint _id) public payable {
         ProductWithBids storage selectedProduct = internalProducts[_id];
         //onlyAfter biddingEnd && onlyBefore revealEnd
-        require(block.timestamp > selectedProduct.biddingEnd, "onlyAfter biddingEnd");
-        require(block.timestamp < selectedProduct.revealEnd, "onlyBefore revealEnd");
+        require(block.timestamp > selectedProduct.biddingEnd, "Only after the bidding has closed");
+        require(block.timestamp < selectedProduct.revealEnd, "The reveal phase has ended");
         uint count = selectedProduct.bidsCount;
 
         uint[] memory values = new uint[](count);

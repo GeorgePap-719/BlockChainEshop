@@ -1,14 +1,10 @@
 import React, {Component} from 'react';
 import Web3 from 'web3';
-//import logo from '../logo.png';
 import './css/App.css';
 import eShop from '../abis/eShop.json';
-//import BlindAuction from '../abis/BlindAuction.json';
 import Navbar from './Navbar';
 import Main from './Main';
 
-
-process.title = eShop;
 
 class App extends Component {
 

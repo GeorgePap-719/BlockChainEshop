@@ -11,3 +11,13 @@
 input#productPrice bid {
     width: 28px;
 }
+
+nav.navbar.bg-danger.fixed-top.flex-md-nowrap.p-0.shadow {
+    background-color: #343a40;
+}
+
+span#account {
+    /*background-color: #ffff;*/
+    color: #ffff;
+}
+
