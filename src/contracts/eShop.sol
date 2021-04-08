@@ -6,7 +6,14 @@ pragma experimental ABIEncoderV2;
  * as it enables support for two levels
  * of dynamic arrays .
  */
-
+/*
+ * 1) TODO charge taxes on every transaction and keep
+ *    them on a public map. Also display them on a
+ *    separate tab.
+ *
+ * 2) TODO Create separate tabs for every section.
+ * 3) TODO make the User set the upper limit for transporting fee.
+*/
 contract eShop {
     string public name;
     uint public productCount = 0;
@@ -26,6 +33,10 @@ contract eShop {
      */
     mapping(uint => AdditionalVars) private extraProductVars;
     uint public globalBidsCount = 0;
+
+    //Taxes
+    mapping(address => uint) public Taxes;
+
 
     modifier maxValue(uint id) {
         require(
@@ -128,6 +139,8 @@ contract eShop {
         require(bytes(_name).length > 0, "Item must have a name");
         //Require a valid price
         require(_price > 0, "Price must be valid");
+        //Require x2 msg.value of item's price
+        require(msg.value >= _price, "The collateral msg.value must at least be two times grater than the item's");
         //increase product productCount
         productCount ++;
         /*
@@ -142,7 +155,7 @@ contract eShop {
         //create the product
         ProductWithBids storage newProduct = internalProducts[productCount];
         AdditionalVars storage extraVars = extraProductVars[productCount];
-        //TODO Impl transportDeposit mechanism.
+
         extraVars.id = productCount;
         newProduct.id = productCount;
         newProduct.name = _name;
@@ -172,8 +185,10 @@ contract eShop {
         _product.owner = msg.sender;
         //Mark as purchasedProduct
         _product.purchased = true;
+        //Charge tax
+        uint tax = chargeTax(msg.value, msg.sender);
         //Pay the seller by sending them Ether
-        _seller.transfer(msg.value);
+        _seller.transfer(msg.value - tax);
         //trigger an event
         emit ProductPurchased(productCount, _product.name, _product.price, msg.sender, true);
         //beginAuction
@@ -388,6 +403,42 @@ contract eShop {
         );
     }
 
+    function refundSeller(
+        address payable _seller,
+        uint _id
+    )
+    public
+    payable
+    {
+        uint amount = transportDeposit[_id];
+        if (amount > 0) {
+            uint tax = chargeTax(amount, _seller);
+            if (amount - tax > 0)
+                _seller.transfer(amount - tax);
+            // It is important to set this to zero because the recipient
+            // can call this function again as part of the receiving call
+            // before `transfer` returns .
+            transportDeposit[_id] = 0;
+        } else if (amount < 0) {
+            //emit event about the state
+            //of transportDeposit[_id].
+        }
+    }
+
+    function chargeTax(
+        uint amount,
+        address payable buyer
+    )
+    public
+    payable
+    returns (uint tax)
+    {
+        tax = amount * 24 / 100;
+        // if (Taxes[buyer] != address(0))
+        Taxes[buyer] += tax;
+        return tax;
+    }
+
     function beginAuction(uint _id) internal {
         ProductWithBids storage selectedProduct = internalProducts[_id];
         AdditionalVars storage extraVars = extraProductVars[_id];
@@ -433,25 +484,6 @@ contract eShop {
     }
     //End of BlindAuction
 
-    function refundSeller(
-        address payable _seller,
-        uint _id
-    )
-    public
-    payable
-    {
-        uint amount = transportDeposit[_id];
-        if (amount > 0) {
-            _seller.transfer(amount);
-            // It is important to set this to zero because the recipient
-            // can call this function again as part of the receiving call
-            // before `transfer` returns .
-            transportDeposit[_id] = 0;
-        } else if (amount < 0) {
-            //emit event about the state
-            //of transportDeposit[_id].
-        }
-    }
 }
 
 

@@ -204,7 +204,7 @@ class Main extends Component {
                                 </td>
                                 <td>
                                     {
-                                        // product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
+                                        product.revealEnd - Math.floor(Date.now() / 1000) > 0 &&
                                         product.biddingEnd - Math.floor(Date.now() / 1000) < 0 //&&
                                             // !isNaN(product.revealEnd)
                                             ? <button
