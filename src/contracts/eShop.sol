@@ -22,8 +22,10 @@ contract eShop {
     //Money for paying the transporter(winner of the auction),
     //can not be more than the item's price.
     mapping(uint => uint) public transportDeposit;
-
+    //main mapping for products
     mapping(uint => ProductWithBids) public internalProducts;
+    uint biddingTime = 120;
+    uint revealTime = 60;
     /*
      * this struct serves only for storing extra
      * variables since solidity structs can not handle
@@ -33,10 +35,9 @@ contract eShop {
      */
     mapping(uint => AdditionalVars) private extraProductVars;
     uint public globalBidsCount = 0;
-
     //Taxes
-    mapping(address => uint) public Taxes;
-
+    mapping(address => uint) public taxes;
+    uint public taxCounter = 0;
 
     modifier maxValue(uint id) {
         require(
@@ -65,7 +66,7 @@ contract eShop {
         // Allowed withdrawals of previous bids
         mapping(address => uint) pendingReturns;
 
-        uint bidsCount;
+        mapping(address => uint) bidsCount;
         bool ended;
         uint biddingEnd;
         uint revealEnd;
@@ -222,7 +223,7 @@ contract eShop {
             _secret,
             _id
         );
-        selectedProduct.bidsCount++;
+        selectedProduct.bidsCount[msg.sender]++;
     }
 
     /// Place a blinded bid with `_blindedBid` =
@@ -290,9 +291,9 @@ contract eShop {
         require(block.timestamp < selectedProduct.revealEnd, "The reveal phase has ended");
 
         uint length = selectedProduct.bids[msg.sender].length;
-        require(_values.length == length);
-        require(_fake.length == length);
-        require(_secret.length == length);
+        require(_values.length == length, "invalid length value");
+        require(_fake.length == length, "invalid length fake");
+        require(_secret.length == length, "invalid length secret");
 
         uint refund;
         for (uint i = 0; i < length; i++) {
@@ -363,7 +364,9 @@ contract eShop {
         // before `transfer` returns .
         if (transportDeposit[_id] - selectedProduct.lowestBid >= 0 && !selectedProduct.ended) {
             selectedProduct.lowestBidder.transfer(selectedProduct.lowestBid + selectedProduct.lowestBid);
-            transportDeposit[_id] -= selectedProduct.lowestBid;
+            uint tax = chargeTax(selectedProduct.lowestBid, selectedProduct.beneficiary);
+            uint sub = selectedProduct.lowestBid + tax;
+            transportDeposit[_id] -= sub;
         }
 
         refundSeller(
@@ -383,7 +386,7 @@ contract eShop {
         //onlyAfter biddingEnd && onlyBefore revealEnd
         require(block.timestamp > selectedProduct.biddingEnd, "Only after the bidding has closed");
         require(block.timestamp < selectedProduct.revealEnd, "The reveal phase has ended");
-        uint count = selectedProduct.bidsCount;
+        uint count = selectedProduct.bidsCount[msg.sender];
 
         uint[] memory values = new uint[](count);
         bool[] memory fake = new bool[](count);
@@ -412,9 +415,8 @@ contract eShop {
     {
         uint amount = transportDeposit[_id];
         if (amount > 0) {
-            uint tax = chargeTax(amount, _seller);
-            if (amount - tax > 0)
-                _seller.transfer(amount - tax);
+            if (amount > 0)
+                _seller.transfer(amount);
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `transfer` returns .
@@ -434,8 +436,9 @@ contract eShop {
     returns (uint tax)
     {
         tax = amount * 24 / 100;
-        // if (Taxes[buyer] != address(0))
-        Taxes[buyer] += tax;
+        if (taxes[buyer] == 0)
+            taxCounter++;
+        taxes[buyer] += tax;
         return tax;
     }
 
@@ -446,9 +449,9 @@ contract eShop {
         extraVars.firstTime = true;
         selectedProduct.lowestBid = 0;
         selectedProduct.ended = false;
-        selectedProduct.bidsCount = 0;
-        selectedProduct.biddingEnd = block.timestamp + 40;
-        selectedProduct.revealEnd = selectedProduct.biddingEnd + 60;
+        //selectedProduct.bidsCount = 0;
+        selectedProduct.biddingEnd = block.timestamp + biddingTime;
+        selectedProduct.revealEnd = selectedProduct.biddingEnd + revealTime;
         //trigger an event
         emit NewAuctionBegins();
     }

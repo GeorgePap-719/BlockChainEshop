@@ -8,9 +8,9 @@
     width: 38%;
 }
 
-input#productPrice bid {
-    width: 28px;
-}
+/*input#productPrice bid {*/
+/*    width: 28px;*/
+/*}*/
 
 nav.navbar.bg-danger.fixed-top.flex-md-nowrap.p-0.shadow {
     background-color: #343a40;
@@ -21,3 +21,30 @@ span#account {
     color: #ffff;
 }
 
+nav.nav.nav-tabs {
+    opacity: 1;
+    font-size: 17px;
+}
+
+div#uncontrolled-tab-example-tabpane-add\ product {
+    opacity: 1;
+}
+
+div#uncontrolled-tab-example-tabpane-buy\ product {
+    opacity: 1;
+}
+
+div#uncontrolled-tab-example-tabpane-bidding {
+    opacity: 1;
+}
+
+div#uncontrolled-tab-example-tabpane-taxes {
+    opacity: 1;
+}
+
+.profile-tabs {
+    width: 60%;
+    margin-top: 3rem;
+    margin-left: auto;
+    margin-right: auto;
+}

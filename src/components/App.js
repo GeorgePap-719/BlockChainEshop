@@ -64,6 +64,19 @@ class App extends Component {
             console.log("productsCount: ", productCount.toString())
             console.log("globalBids: ", globalBidsCount.toString())
 
+            const taxCounter = await eshop.methods.taxCounter().call()
+            this.setState({taxCounter})
+            //Load taxes map
+            // for (var j = 1; j < taxCounter; j++) {
+            const taxMap = await eshop.methods.taxes(this.state.account).call()
+            this.setState({
+                taxMap: [this.state.taxMap, taxMap]
+            })
+
+            console.log("TaxesCounter: ", taxCounter)
+            console.log("Taxes: ", taxMap)
+            // }
+
             this.setState({loading: false})
         } else {
             window.alert("eShop contract can not be deployed to detected network")
@@ -76,7 +89,9 @@ class App extends Component {
         this.state = {
             account: '',
             productCount: 0,
+            taxCounter: 0,
             internalProducts: [],
+            taxMap: [],
             bidsCount: 0,
             nakedBids: [],
             globalBidsCount: 0,
@@ -118,10 +133,7 @@ class App extends Component {
     }
 
     bidProduct(price, fake, id, bidsCount) {
-
         this.setState({loading: true})
-
-        // console.log("before cast fake: ", fake)
         console.log("fake :", fake)
 
         const secret = "eShop";
@@ -132,8 +144,6 @@ class App extends Component {
             {t: 'bool', v: fake},
             {t: 'string', v: secret}
         );
-
-        //TODO impl support for multiple users.
 
         console.log(parseInt(_price) + ": price");
         console.log("tempBid First Look : ", bidsCount);
@@ -238,7 +248,9 @@ class App extends Component {
                                 ?
                                 <div id="loader" className="text-center"><p className="text-center">Loading...</p></div>
                                 : <Main
+                                    account={this.state.account}
                                     internalProducts={this.state.internalProducts}
+                                    taxMap={this.state.taxMap}
                                     bids={this.state.bids}
                                     createProduct={this.createProduct}
                                     purchaseProduct={this.purchaseProduct}
