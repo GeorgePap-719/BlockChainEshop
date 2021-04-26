@@ -1,0 +1,22 @@
+Buyer (address 2) = 1 Eth Product.
+
+Seller (address 1) = will get at the end of contract 0.636 :
+First he has to calculate the price of the product including tax + transporting fees, then he pays upfront double the
+value of the product (2 * 1 Eth). 1 eth product can be split into = tax(1 * 0.24), transporting fees 
+= (0.1 + 0.1*0.24(tax) = 0.124) so in total 0.636 - gas fee
+
+1 eth product is equal profit of = 0.636 + 2 eth which he payed upfront = 2.636 - gas fee
+
+
+Binder 1 (address 2) = will get 0.1 eth since he will be the one who wins the bidding
+
+Binder 2 (address 3) = will bid 0.2 but will get them back since he will be overbidded by binder 1.
+
+
+** Each address represent a diffrent account on Blockchain.
+
+** The taxes are charged only one time per transaction. We have two transactions in the contract , first when the buyer buys the product so he is charged with 0.24 eth taxes and second time when the seller pays the transporter 0.1*0.24 = 0.024 eth 
+The Taxes page will display only the taxes which have been charged.
+seller (address 1) = 0.024 taxes
+Buyer (address 2) = 0.24 taxes
+Transporter (address 3) = 0 taxes
