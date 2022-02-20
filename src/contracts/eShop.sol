@@ -6,14 +6,6 @@ pragma experimental ABIEncoderV2;
  * as it enables support for two levels
  * of dynamic arrays .
  */
-/*
- * 1) TODO charge taxes on every transaction and keep
- *    them on a public map. Also display them on a
- *    separate tab.
- *
- * 2) TODO Create separate tabs for every section.
- * 3) TODO make the User set the upper limit for transporting fee.
-*/
 contract eShop {
     string public name;
     uint public productCount = 0;
@@ -46,12 +38,6 @@ contract eShop {
         );
         _;
     }
-
-    // Not used at the moment.
-    //    modifier onlyBefore(uint _time) {require(block.timestamp < _time);
-    //        _;}
-    //    modifier onlyAfter(uint _time) {require(block.timestamp > _time);
-    //    _;}
 
     struct ProductWithBids {
         uint id;
